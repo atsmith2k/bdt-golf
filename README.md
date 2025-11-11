@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## BDT Golf League App
 
-## Getting Started
+Private league HQ for results, rosters, analytics, and commissioner tooling. This repository contains the front-end scaffolding aligned with the implementation plan in `docs/implementation-plan.md`.
 
-First, run the development server:
+### What's in place today
+
+- App shell with authentication route group (`/login`, `/otp`, `/reset-password`) and protected league workspace (`/app/**`).
+- Supabase-backed dashboard, match entry, teams, players, analytics, and commissioner views (`src/lib/queries.ts` centralises data access).
+- Commissioner console and OTP invite management reading from the `one_time_passwords` table.
+- Shared UI kit (`Button`, `Card`, `Badge`, `Input`, etc.), layout (`AppShell`), domain types, and Supabase client helpers.
+
+### Local development
 
 ```bash
+npm install
+cp .env.local.example .env.local  # fill in Supabase credentials
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000`. The root route redirects to `/login`; successful auth will forward to `/app`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local` with:
 
-## Learn More
+```bash
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
 
-To learn more about Next.js, take a look at the following resources:
+These power the Supabase client helpers used across the app. Ensure matching values are configured in your Supabase project.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Project structure (selected)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/app/(auth)` - public auth routes (OTP onboarding, password reset).
+- `src/app/(app)/app` - authenticated app workspace (dashboard, match entry, teams, players, analytics, commissioner tools).
+- `src/components` - layout primitives and UI kit used throughout the app.
+- `src/lib` - domain types, Supabase helpers, query layer (`queries.ts`), and utilities.
 
-## Deploy on Vercel
+### Next steps
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Supabase schema + RLS** - ensure the tables described in `docs/implementation-plan.md` exist and have policies aligned with the league’s roles.
+2. **Auth gateway** - finish the OTP-to-password onboarding flow (server action or edge function) and hook the login form to Supabase auth.
+3. **Server actions / mutations** - wire the match entry form, announcement composer, and commissioner quick actions to mutations that persist via Supabase.
+4. **Deployment** - configure a static export (`next build && next export`) for GitHub Pages once client-side Supabase calls cover all dynamic data.
+5. **Testing** - add unit tests for derived stats plus integration tests for match submission, invite issuance, and commissioner edits.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Refer back to the implementation plan for deeper architecture notes and follow-up tasks such as season rollover, analytics materialization, and RLS policy details.
