@@ -35,7 +35,7 @@ export default async function CommissionerPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-bdt-navy">Commissioner console</h1>
-          <p className="text-sm text-[rgb(var(--bdt-navy) / 0.65)]">
+          <p className="text-sm text-bdt-muted">
             High-trust controls for roster management, match corrections, and league messaging.
           </p>
         </div>
@@ -74,7 +74,7 @@ export default async function CommissionerPage() {
             <Link href="#match-corrections" className="block">
               <Button variant="outline" className="w-full justify-between">
                 Correct match result
-                <span className="text-xs text-[rgb(var(--bdt-navy) / 0.6)]">
+                <span className="text-xs text-bdt-soft">
                   {league.matches.length} total matches
                 </span>
               </Button>
@@ -82,7 +82,7 @@ export default async function CommissionerPage() {
             <Link href="#season-manager" className="block">
               <Button variant="outline" className="w-full justify-between">
                 Manage season state
-                <span className="text-xs text-[rgb(var(--bdt-navy) / 0.6)]">
+                <span className="text-xs text-bdt-soft">
                   {league.seasons.length} seasons tracked
                 </span>
               </Button>
@@ -100,7 +100,7 @@ export default async function CommissionerPage() {
       <Card>
         <CardHeader>
           <CardTitle>Post announcement</CardTitle>
-          <p className="text-sm text-[rgb(var(--bdt-navy) / 0.65)]">
+          <p className="text-sm text-bdt-muted">
             Broadcast to the timeline and notify players. This will trigger a <code>timeline_events</code> insert.
           </p>
         </CardHeader>
@@ -110,17 +110,17 @@ export default async function CommissionerPage() {
       <Card>
         <CardHeader>
           <CardTitle>OTP invites</CardTitle>
-          <p className="text-sm text-[rgb(var(--bdt-navy) / 0.65)]">
+          <p className="text-sm text-bdt-muted">
             Monitor the one-time codes issued to new players. This table reads from <code>one_time_passwords</code>.
           </p>
         </CardHeader>
         <CardContent className="space-y-3">
           {invites.length === 0 ? (
-            <p className="text-sm text-[rgb(var(--bdt-navy) / 0.6)]">
+            <p className="text-sm text-bdt-soft">
               No invites have been issued yet.
             </p>
           ) : (
-            <ul className="divide-y divide-[rgb(var(--bdt-royal) / 0.12)] rounded-2xl border border-[rgb(var(--bdt-royal) / 0.18)] bg-white/95 shadow-[0_16px_32px_rgb(var(--bdt-navy) / 0.12)]">
+            <ul className="divide-y divide-bdt-veil rounded-2xl border border-bdt-royal-soft bg-white/95 shadow-[0_16px_32px_rgb(var(--bdt-navy) / 0.12)]">
               {invites.map((invite) => (
                 <li
                   key={invite.id}
@@ -128,14 +128,14 @@ export default async function CommissionerPage() {
                 >
                   <div>
                     <p className="font-semibold text-bdt-navy">{invite.username}</p>
-                    <p className="text-xs text-[rgb(var(--bdt-navy) / 0.6)]">
+                    <p className="text-xs text-bdt-soft">
                       {invite.email ?? "No email on file"}
                     </p>
                   </div>
-                  <div className="font-mono text-xs uppercase tracking-wide text-[rgb(var(--bdt-navy) / 0.6)]">
+                  <div className="font-mono text-xs uppercase tracking-wide text-bdt-soft">
                     {invite.code}
                   </div>
-                  <div className="text-xs text-[rgb(var(--bdt-navy) / 0.6)]">
+                  <div className="text-xs text-bdt-soft">
                     Expires {new Date(invite.expiresAt).toLocaleDateString()}
                   </div>
                   <div className="text-right text-xs font-semibold text-bdt-royal sm:text-left">

@@ -58,17 +58,17 @@ export function TeamsClient({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-bdt-navy">Teams</h1>
-          <p className="text-sm text-[rgb(var(--bdt-navy) / 0.65)]">
+          <p className="text-sm text-bdt-muted">
             Roster assignments, records, and quick links to recent matches.
           </p>
         </div>
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-          <label className="flex items-center gap-2 text-sm text-[rgb(var(--bdt-navy) / 0.7)]">
+          <label className="flex items-center gap-2 text-sm text-bdt-muted">
             Season
             <select
               value={seasonId}
               onChange={(event) => setSeasonId(event.target.value)}
-              className="rounded-lg border border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
+              className="rounded-lg border border-bdt-royal-soft bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
             >
               {seasons.map((season) => (
                 <option key={season.id} value={season.id}>
@@ -99,7 +99,7 @@ export function TeamsClient({
         <TeamsSkeleton />
       ) : teams.length === 0 ? (
         <Card>
-          <CardContent className="py-6 text-sm text-[rgb(var(--bdt-navy) / 0.6)]">
+          <CardContent className="py-6 text-sm text-bdt-soft">
             No teams recorded for {activeSeason?.name ?? "this season"} yet.
           </CardContent>
         </Card>
@@ -110,31 +110,31 @@ export function TeamsClient({
               <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className="h-12 w-12 rounded-2xl border border-[rgb(var(--bdt-navy) / 0.12)] shadow-[0_12px_22px_rgb(var(--bdt-navy) / 0.12)]"
+                    className="h-12 w-12 rounded-2xl border border-bdt-veil shadow-[0_12px_22px_rgb(var(--bdt-navy) / 0.12)]"
                     style={{ backgroundColor: team.color ?? "#0f172a" }}
                   />
                   <div>
                     <CardTitle>{team.name}</CardTitle>
-                    <p className="text-sm text-[rgb(var(--bdt-navy) / 0.6)]">
+                    <p className="text-sm text-bdt-soft">
                       {formatRecord(team.wins, team.losses, team.ties)} - {formatPoints(team.points)}
                     </p>
                   </div>
                 </div>
                 <Link
                   href={`/app/teams/${team.id}?seasonId=${seasonId}`}
-                  className="inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1 text-sm font-semibold text-bdt-royal transition hover:border-[rgb(var(--bdt-royal) / 0.25)] hover:bg-[rgb(var(--bdt-royal) / 0.08)] hover:text-bdt-navy"
+                  className="inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-1 text-sm font-semibold text-bdt-royal transition hover:border-bdt-royal-soft hover:bg-bdt-panel hover:text-bdt-navy"
                 >
                   View team <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </CardHeader>
-              <CardContent className="space-y-4 text-sm text-[rgb(var(--bdt-navy) / 0.75)]">
-                <div className="flex items-center gap-3 rounded-2xl border border-[rgb(var(--bdt-royal) / 0.18)] bg-white/90 px-3 py-2 shadow-[0_12px_24px_rgb(var(--bdt-navy) / 0.08)]">
+              <CardContent className="space-y-4 text-sm text-bdt-soft">
+                <div className="flex items-center gap-3 rounded-2xl border border-bdt-royal-soft bg-white/90 px-3 py-2 shadow-[0_12px_24px_rgb(var(--bdt-navy) / 0.08)]">
                   <Users className="h-4 w-4 text-bdt-royal" />
                   <span>
                     {team.rosterSize} rostered player{team.rosterSize === 1 ? "" : "s"}
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-4 text-xs text-[rgb(var(--bdt-navy) / 0.6)]">
+                <div className="flex flex-wrap gap-4 text-xs text-bdt-soft">
                   <span>
                     Matches <span className="font-semibold text-bdt-navy">{team.matchesPlayed}</span>
                   </span>
@@ -158,7 +158,7 @@ function TeamsSkeleton() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       {Array.from({ length: 4 }).map((_, index) => (
-        <Card key={index} className="border-[rgb(var(--bdt-royal) / 0.16)] bg-white/80 shadow-none backdrop-blur">
+        <Card key={index} className="border-bdt-royal-soft bg-white/80 shadow-none backdrop-blur">
           <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 animate-pulse rounded-full bg-[rgb(var(--bdt-royal) / 0.16)]" />

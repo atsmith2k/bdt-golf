@@ -66,8 +66,24 @@ body {
     color: rgb(var(--bdt-sky));
   }
 
+  .text-bdt-muted {
+    color: rgb(var(--bdt-navy) / 0.65);
+  }
+
+  .text-bdt-soft {
+    color: rgb(var(--bdt-navy) / 0.55);
+  }
+
+  .text-bdt-quiet {
+    color: rgb(var(--bdt-navy) / 0.45);
+  }
+
   .border-bdt-royal-soft {
     border-color: rgb(var(--bdt-royal) / 0.18);
+  }
+
+  .border-bdt-veil {
+    border-color: rgb(var(--bdt-royal) / 0.12);
   }
 
   .hover\:bg-bdt-navy:hover {
@@ -80,5 +96,18 @@ body {
 
   .shadow-bdt-soft {
     box-shadow: 0 18px 45px rgb(var(--bdt-navy) / 0.18);
+  }
+
+  .bg-bdt-panel {
+    background-color: rgb(var(--bdt-ice));
+  }
+
+  .bg-bdt-glass {
+    background-color: rgb(var(--bdt-ice) / 0.8);
+    backdrop-filter: blur(14px);
+  }
+
+  .bg-bdt-royal-tint {
+    background-color: rgb(var(--bdt-royal) / 0.08);
   }
 }
