@@ -24,10 +24,12 @@ function NavLinks({
   links,
   pathname,
   tone = "glass",
+  onNavigate,
 }: {
   links: NavItem[];
   pathname: string;
   tone?: NavTone;
+  onNavigate?: () => void;
 }) {
   return (
     <nav className="flex flex-col gap-1">
@@ -53,6 +55,7 @@ function NavLinks({
           <Link
             key={link.href}
             href={link.href}
+            onClick={onNavigate}
             className={cn(
               baseClasses,
               isActive ? activeClasses : inactiveClasses,
@@ -231,6 +234,7 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
                       links={PRIMARY_ROUTES}
                       pathname={pathname}
                       tone="surface"
+                      onNavigate={() => setMobileOpen(false)}
                     />
                   </div>
                   {commissionerLinks.length > 0 && (
@@ -239,11 +243,12 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
                         <Shield className="h-3 w-3" />
                         Commissioner
                       </p>
-                      <NavLinks
-                        links={commissionerLinks}
-                        pathname={pathname}
-                        tone="surface"
-                      />
+                    <NavLinks
+                      links={commissionerLinks}
+                      pathname={pathname}
+                      tone="surface"
+                      onNavigate={() => setMobileOpen(false)}
+                    />
                     </div>
                   )}
                 </div>

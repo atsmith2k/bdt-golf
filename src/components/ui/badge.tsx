@@ -10,7 +10,7 @@ const variantClasses = {
   default: "bg-bdt-royal text-white shadow-[0_8px_16px_rgb(var(--bdt-navy) / 0.24)]",
   outline:
     "border border-[rgb(var(--bdt-royal) / 0.28)] bg-[rgb(var(--bdt-ice))] text-bdt-royal",
-  success: "bg-[rgb(32,133,90,0.18)] text-[rgb(22,94,64)]",
+  success: "bg-[rgba(32,133,90,0.18)] text-[rgb(22,94,64)]",
 };
 
 export function Badge({
