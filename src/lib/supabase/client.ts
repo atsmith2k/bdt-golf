@@ -1,4 +1,5 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getEnv } from "../env";
 
 let client: SupabaseClient | undefined;
@@ -13,11 +14,6 @@ export function getSupabaseClient() {
     throw new Error("Supabase environment variables are not configured.");
   }
 
-  client = createClient(env.supabaseUrl, env.supabaseAnonKey, {
-    auth: {
-      persistSession: true,
-      detectSessionInUrl: true,
-    },
-  });
+  client = createBrowserClient(env.supabaseUrl, env.supabaseAnonKey);
   return client;
 }

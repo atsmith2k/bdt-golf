@@ -245,134 +245,361 @@ This schema gives you enough flexibility to:
 
 ### 6.1 Home / Timeline
 
+**Purpose**
+
+- Provide members with a single stream of league activity immediately after sign-in.
+- Surface commissioner announcements alongside system-generated match updates so no one misses changes.
+
+**Primary users**
+
+- All authenticated players checking the latest league status.
+- Commissioner validating that recent submissions propagated correctly.
+
 **Route:** `/app/home`
-**Data shown (newest first):**
 
-* “Match recorded: Team A vs Team B, 3pts to Team A”
-* “Ashton posted: BDT kickoff is April 12”
-* “Match scheduled: Smith vs Trevor, 6/5/2026 9:00am”
+**Content types (newest first)**
 
-**Filters:** All / My matches / Team
+- "Match recorded: Team A vs Team B, 3 pts to Team A".
+- "Ashton posted: BDT kickoff is April 12".
+- "Match scheduled: Smith vs Trevor, 6/5/2026 9:00 AM".
+- Future v2: "Season archived", "Team trade executed".
 
-**API Needs:**
+**Filters**
 
-* `GET /timeline?limit=20`
-* `POST /timeline` (admin only, for announcements)
+- All: default view that lists every timeline event.
+- My matches: events where the signed-in user was a participant.
+- Team: events involving members of the viewer's current team.
+
+**Data dependencies**
+
+- `timeline_events` materialized view (or table) joined with `matches`, `match_participants`, `users`, and `announcements`.
+- Derived fields required for display: `event_type`, `title`, `body`, `created_at`, optional `cta_url`.
+- Every event must include a foreign key or payload so the CTA can open a match, team, or announcement detail view.
+
+**Interactions and states**
+
+- Initial load fetches 20 records and shows skeleton placeholders while waiting.
+- "Load more" button appends the next page via cursor-based pagination.
+- Empty state: "No activity yet. Record your first match to get the league moving."
+- Error state: inline toast "Timeline failed to refresh" with a retry action.
+
+**Acceptance criteria**
+
+1. After authentication, users land on `/app/home` and events are sorted by `created_at` descending.
+2. Switching timeline filters re-queries without a full page reload and preserves scroll position.
+3. Clicking a match event opens the match detail route or overlay.
+4. Commissioner announcements display a badge and support markdown for emphasis and links.
+
+**API needs**
+
+- `GET /timeline?limit=20&cursor=<timestamp>` returns `{ data: TimelineEvent[], nextCursor?: string }`.
+- `POST /timeline` (commissioner only) accepts `{ title, body, category, visibility }` and writes to `timeline_events`.
+- Optional: websocket or Supabase channel subscription for live updates.
 
 ---
 
 ### 6.2 Match Entry Page
 
+**Purpose**
+
+- Allow any active player to record match outcomes while details are fresh.
+- Enforce scoring formats so team and player aggregates remain accurate.
+
 **Route:** `/app/matches/new`
 
-**Form fields:**
+**Permissions:** Active-season players by default; commissioner override for corrections.
 
-* Date (default today)
-* Match type (dropdown)
-* Select players (multi-select from users)
-* Auto-fill their teams
-* Points assignment:
+**Form fields**
 
-  * either you let user input “Player X: 1pt, Player Y: 0pt”
-  * or you let them declare winner and system assigns based on rules
-* Notes
+- Date (defaults to today, allow backdating via calendar picker).
+- Match type (dropdown tied to scoring template).
+- Course (optional free text or reference table).
+- Player selection (multi-select of active players; show team chips once selected).
+- Points assignment:
+  - Manual mode: per-player numeric inputs with inline validation.
+  - Rules mode: choose winner/loser side and auto-allocate based on scoring config.
+- Notes (optional text area for context).
+- Attachments v2 (optional photo proof).
 
-**On submit:**
+**Dynamic behaviour**
 
-1. Create `matches` row
-2. Create `match_participants` rows
-3. Create `timeline_events` row
-4. Trigger re-calc (can be: run on read, or store cached totals in team/user tables)
+- Selecting a match type loads default number of slots and point allocations.
+- Selecting players auto-populates team fields and prevents duplicates.
+- Display computed totals so users can confirm points sum to the expected value.
 
-**Validation:**
+**Validation rules**
 
-* all players must be in an active season
-* players must belong to teams
-* points must sum to expected total for match type (document that rule!)
+- Minimum of two players; enforce team balance per match type.
+- Date cannot be in the future or before season start unless commissioner override.
+- Total points must match the configured match type total (see scoring table).
+- Duplicate match (same players, date, type) prompts confirmation before submission.
+
+**Submission flow**
+
+1. Client bundles payload `{ date, match_type_id, course, participants[], notes }`.
+2. API `POST /matches` wraps inserts in a transaction, generates timeline event, and recalculates aggregates.
+3. On success, redirect to match detail and surface toast "Match recorded".
+4. On failure, show server validation messages inline and keep form state.
+
+**Edge cases**
+
+- If a selected player is inactive or injured, display warning and block submission.
+- Provide commissioner-only checkbox to mark "override totals" for custom scoring.
+- Show spinner overlay during submission to prevent duplicate requests.
+
+**Acceptance criteria**
+
+1. User can complete the form with keyboard only and submit within two minutes.
+2. Invalid inputs highlight the erroneous field with descriptive copy.
+3. Recording a match updates team totals visible on the Teams page within the next fetch.
+4. Duplicate detection warns but allows commissioner override.
+
+**API needs**
+
+- `POST /matches` accepting `{ date, type_id, course, participants: [{ user_id, team_id, points }], notes, override_reason? }`.
+- `GET /match-types` to hydrate dropdowns with scoring metadata.
+- `GET /users?status=active` to populate the selection list (consider client caching).
 
 ---
 
 ### 6.3 Teams Page
 
-**Route:** `/app/teams` and `/app/teams/:id`
+**Purpose**
 
-Shows:
+- Give members a clear view of team standings, roster health, and recent performance.
+- Provide commissioner controls to adjust rosters when needed.
 
-* Team name
-* Season
-* Total points (either pre-calculated or aggregated)
-* Roster
-* Recent matches
+**Routes:** `/app/teams` (index) and `/app/teams/:id` (detail)
 
-**Query to predefine in docs:**
+**Index view**
 
-```sql
-SELECT t.id, t.name,
-       SUM(mp.points_awarded) AS total_points
-FROM teams t
-JOIN users u ON u.team_id = t.id
-JOIN match_participants mp ON mp.user_id = u.id
-JOIN matches m ON m.id = mp.match_id AND m.status = 'valid'
-WHERE t.season_id = :season_id
-GROUP BY t.id, t.name;
-```
+- Standings table sorted by total points, showing team name, captain, wins/losses, and points.
+- Quick metric chips (streak, matches played).
+- Clickable rows navigate to the detail page.
 
-(You can drop that right into Supabase SQL.)
+**Detail view**
+
+- Header with team branding, record, total points, and season context.
+- Roster list with player name, availability status, cumulative points, and contact shortcut.
+- Recent matches list linking to match details.
+- Commissioner tools (if authorized): "Move player", "Edit team info", "Archive team".
+
+**Data dependencies**
+
+- `teams`, `users`, `matches`, `match_participants`, and `seasons` tables.
+- Aggregations precomputed via materialized view `team_season_totals` for fast loads.
+- Queries must respect active season filter; allow toggling historical seasons.
+
+**Interactions and states**
+
+- Season selector drop-down to view past seasons.
+- Loading skeletons for standings table and detail widgets.
+- Empty state for brand-new season: "No matches recorded for this team yet."
+- Error toast with retry when standings query fails.
+
+**Acceptance criteria**
+
+1. Teams index loads within two seconds showing current season standings.
+2. Selecting a team updates the URL and detail section without a full reload.
+3. Roster list reflects player transfers within five seconds of commissioner update.
+4. Totals on Teams page match values shown on Analytics > Team leaderboard.
+
+**API needs**
+
+- `GET /teams?season_id=<id>` returning standings with aggregate totals.
+- `GET /teams/:id` returning roster, recent matches, and metadata.
+- `PATCH /teams/:id` (commissioner) for name, branding, or captain updates.
 
 ---
 
 ### 6.4 Player Profile
 
+**Purpose**
+
+- Highlight an individual player's contributions and provide a personal dashboard.
+- Make comparisons of recent form and head-to-head records easy.
+
 **Route:** `/app/players/:id`
 
-Shows:
+**Sections**
 
-* Name, team, bio
-* Season stats: matches played, total points, avg points per match
-* Recent matches (link to match detail)
+- Profile header: avatar or initials, bio, contact links, active team badge.
+- Season summary cards: matches played, total points, average points, win percentage.
+- Recent matches feed (five most recent) with quick links to match detail.
+- "By the numbers" table of opponents faced and results (stretch goal).
+- Commissioner-only actions: reset password, toggle active status.
+
+**Data dependencies**
+
+- `users`, `match_participants`, `matches`, plus derived view for per-season aggregates.
+- RLS policies restrict commissioner-only actions to authorized roles.
+
+**Interactions and states**
+
+- Season selector to view historical performance.
+- Loading placeholders for stats and recent matches separately.
+- Empty state for new players: "No matches yet. Record your first round to populate stats."
+- Error handling via toast with retry option.
+
+**Acceptance criteria**
+
+1. Player profile loads and renders key stats within one second after data returns.
+2. Season selector updates all cards and lists in sync.
+3. Clicking a recent match navigates to detail while preserving back navigation.
+4. Commissioner sees management buttons hidden from regular users.
+
+**API needs**
+
+- `GET /players/:id?season_id=<id>` returning `{ profile, season_totals, recent_matches }`.
+- `PATCH /players/:id` (commissioner) to update bio, contact info, or team assignment.
+- `POST /players/:id/reset-password` (commissioner) triggers Supabase OTP email.
 
 ---
 
 ### 6.5 Analytics
 
-You said “allow for analytics to be ran on the inputted data.” For v1, document a small analytics set:
+**Purpose**
 
-1. **Leaderboard (players)**: order by total points desc
-2. **Leaderboard (teams)**: order by total points desc
-3. **Participation**: matches played per player
-4. **Form**: last 5 match points per player
-5. **Head-to-head** (optional v2): filter match_participants where A and B both in same match
+- Provide actionable insights on player and team trends without exporting to spreadsheets.
+- Support commissioner decision-making for handicapping, scheduling, and awards.
 
-Put in docs:
+**Route:** `/app/analytics` (tabbed interface)
 
-* which of these are computed on the fly
-* which of these are materialized (cached) for speed
+**Baseline modules (v1)**
+
+1. **Player leaderboard**: table sorted by total points with filters for season and team; columns include matches, total points, average points, and form (last five).
+2. **Team leaderboard**: card grid showing total points, point differential, streak, and matches played.
+3. **Participation**: bar chart or list of matches played per player highlighting low participation.
+4. **Form tracker**: sparkline per player; computed from last five matches.
+5. **Head-to-head** (v2): matrix or filterable list powered by `match_participants` self-join.
+
+**Data strategy**
+
+- Prefer server-side materialized views (`player_season_totals`, `team_season_totals`, `player_recent_form`) refreshed after match insert.
+- Provide ad-hoc SQL fallback for historical seasons where usage is low.
+
+**Interactions and states**
+
+- Tabs for each module with independent loading indicators.
+- Filters (season, team, minimum matches) stored in query params for deep links.
+- Empty state: "No analytics yet. Record matches to unlock insights."
+- Error state: inline message with retry and link to help docs.
+
+**Acceptance criteria**
+
+1. Landing on Analytics defaults to the player leaderboard for the active season.
+2. Adjusting filters updates charts/tables within 500 ms after response.
+3. Export CSV button downloads the current leaderboard view.
+4. Only commissioner sees the head-to-head beta toggle until the module is production ready.
+
+**API needs**
+
+- `GET /analytics/players?season_id=<id>&min_matches=<n>`.
+- `GET /analytics/teams?season_id=<id>`.
+- `GET /analytics/participation?season_id=<id>`.
+- `GET /analytics/head-to-head?player_a=<id>&player_b=<id>` (v2).
+- Consider Supabase RPCs for complex aggregates to avoid large payloads.
 
 ---
 
 ## 7. Admin / Commissioner Tools
 
-Document a separate role: **commissioner**.
+**Role definition**
 
-**Commissioner can:**
+- Commissioner is a trusted admin user with privileges beyond regular players.
+- Access controlled via `role = 'commissioner'` column or membership in a `commissioners` table checked in RLS.
 
-* Create user with OTP
-* Edit user team
-* Edit/void match
-* Post announcement
-* Create season / close season
+**Guiding principles**
 
-**Endpoints to document:**
+- Every destructive action is reversible or backed by an audit trail.
+- Critical actions require confirmation modals and clear success/error feedback.
 
-* `POST /admin/users`
-* `POST /admin/otp`
-* `PATCH /admin/matches/:id`
-* `POST /admin/announcement`
+### 7.1 Onboarding and OTP management
 
-In Supabase, you can gate these with RLS checking `auth.uid()` in a `commissioner_ids` table or a `role` column.
+**Tasks**
+
+- Create placeholder user records for new members.
+- Generate one-time passwords and deliver them securely.
+- Resend or revoke OTPs if a link expires or is compromised.
+
+**Flow**
+
+1. Commissioner opens `/app/commissioner/users` and selects "Add member".
+2. Form collects name, email, team assignment, optional notes.
+3. System creates Supabase user, stores team relationship, and issues OTP.
+4. Email template sends credentials; timeline logs "Commissioner added Player X".
+
+**Acceptance criteria**
+
+1. Creating a user automatically issues an OTP valid for 24 hours.
+2. Resend button invalidates previous OTPs and sends the new one.
+3. Commissioner can deactivate a user, removing their ability to log in while keeping history.
+
+**API needs**
+
+- `POST /admin/users` to create user + team assignment.
+- `POST /admin/otp` to generate or resend OTP.
+- `PATCH /admin/users/:id` to deactivate/reactivate members.
+
+### 7.2 Roster and match corrections
+
+**Use cases**
+
+- Move a player between teams mid-season with automatic stat adjustments.
+- Void or edit a match when incorrect scores were submitted.
+- Restore a match from archive for audit purposes.
+
+**Flow**
+
+1. Commissioner opens match detail and selects "Edit" or "Void".
+2. System requires confirmation and reason for audit log.
+3. Updates cascade to aggregates and timeline records.
+
+**Acceptance criteria**
+
+1. Editing a match writes an audit entry capturing who changed what and when.
+2. Voided matches no longer contribute points but remain accessible for reference.
+3. Team transfers trigger recalculation of team totals and appear in timeline as "Roster update".
+
+**API needs**
+
+- `PATCH /admin/matches/:id` for corrections.
+- `DELETE /admin/matches/:id` or `PATCH status=void` to invalidate a match.
+- `PATCH /admin/users/:id/team` to move a player between teams.
+
+### 7.3 Announcements and season management
+
+**Tasks**
+
+- Publish announcements that appear on the timeline and optionally send email/push.
+- Create, activate, or close seasons.
+- Archive old seasons while keeping historical stats accessible.
+
+**Flow**
+
+1. Commissioner drafts announcement in `/app/commissioner/announcements`.
+2. Preview shows how the message renders in the timeline.
+3. Publish pushes to `timeline_events` and optionally triggers Supabase notification function.
+4. Season management UI lists seasons with ability to toggle active flag.
+
+**Acceptance criteria**
+
+1. Announcements support markdown (bold, italic, links) with sanitization.
+2. Closing a season locks match entry for that season and prompts creation of the next season.
+3. Only one season can be marked `is_active = true` at a time.
+
+**API needs**
+
+- `POST /admin/announcement`.
+- `GET /admin/seasons` and `POST /admin/seasons`.
+- `PATCH /admin/seasons/:id` to toggle `is_active` or archive.
+
+**Audit and logging**
+
+- Every commissioner action writes to `audit_logs` with `actor_id`, `action`, `payload`, `created_at`.
+- Build simple viewer `/app/commissioner/audit` to help resolve disputes and verify overrides.
 
 ---
-
 ## 8. Deployment Plan
 
 1. **Frontend**
@@ -405,3 +632,199 @@ In Supabase, you can gate these with RLS checking `auth.uid()` in a `commissione
 * **Data correction procedure:** Document: “If someone fat-fingers a match, commissioner voids match and re-enters it.”
 * **User onboarding:** Document: “Commissioner creates user + OTP → user logs in → sets password.”
 
+
+
+---
+
+## 10. Implementation Roadmap
+
+The roadmap below sequences the work so that prerequisites land early, releases stay incremental, and the commissioner always has a usable slice of functionality.
+
+### Phase 0: Project Setup & Infrastructure
+
+**Goals**
+
+- Stand up consistent local environments, CI checks, and a Supabase project that mirrors production.
+- Establish shared UI foundations (design tokens, layout shell, basic form components).
+
+**Key tasks**
+
+- Scaffold Next.js app (App Router) with TypeScript, ESLint, Prettier, Husky pre-commit.
+- Configure Supabase project, import `db/schema.sql`, enable RLS defaults, create service and anon keys.
+- Implement environment management (`src/lib/env.ts`), verifying build fails on missing secrets.
+- Build auth layout frames, navigation shell, and reusable components (button, input, card, table shells).
+- Wire CI to run `pnpm lint` and `pnpm test` (placeholder) on every PR.
+
+**Deliverables**
+
+- Running `pnpm dev` boots the shell app locally.
+- Supabase migrations checked into `db/migrations`.
+- Baseline Storybook (optional) or UI preview page for shared components.
+
+**Exit criteria**
+
+- Contributors can clone, install, and sign into Supabase from `.env.local` in under 15 minutes.
+- CI pipeline is green for scaffold repo.
+
+### Phase 1: Authentication & Onboarding
+
+**Goals**
+
+- Lock down the app behind Supabase auth and deliver the OTP-first login flow.
+- Give the commissioner a path to invite users before broader features ship.
+
+**Key tasks**
+
+- Implement `/login`, `/otp`, `/reset-password` routes with Supabase client and server helpers.
+- Build OTP verification and first-login password reset per flow in section 5.
+- Create commissioner-only bootstrap script (`scripts/bootstrap-commissioner.mjs`) to seed first admin user.
+- Persist session cookies via middleware; redirect unauthenticated users to `/login`.
+- Add smoke tests covering happy-path login and password reset failure states.
+
+**Deliverables**
+
+- Commissioner can log in, generate an OTP for a test user, and that user completes first login.
+- RLS policies enforced so only authenticated users reach `/app/*`.
+
+**Exit criteria**
+
+- Auth pages meet acceptance criteria in section 5.
+- Manual QA walkthrough documented in README entry "Auth smoke test".
+
+### Phase 2: Match Data Model & Entry
+
+**Goals**
+
+- Implement end-to-end match recording, including validation, database writes, and timeline event creation.
+- Ensure stats tables (or materialized views) update correctly on each match submission.
+
+**Key tasks**
+
+- Finalize Supabase tables (`matches`, `match_participants`, `timeline_events`, `player_season_totals`, `team_season_totals`).
+- Build `/app/matches/new` UI with form state management and client-side validation hooks.
+- Create server actions or API routes (`POST /matches`) that wrap inserts in transactions.
+- Implement recalculation logic (trigger, function, or background job) for aggregates.
+- Seed match types and scoring configs; expose `GET /match-types`.
+- Add feature tests: block duplicate match submission and verify commissioner override path.
+
+**Deliverables**
+
+- Demo user records a match and sees confirmation plus a timeline entry.
+- Aggregated totals in `team_season_totals` reflect the new match.
+
+**Exit criteria**
+
+- All acceptance criteria in section 6.2 satisfied.
+- Regression tests cover at least one commissioner override case.
+
+### Phase 3: Timeline & Core League Surfaces
+
+**Goals**
+
+- Provide the primary Home feed and basic Teams and Players views so members feel the league activity.
+
+**Key tasks**
+
+- Implement `/app/home` list view with filters and pagination against `GET /timeline`.
+- Build Teams index and detail routes (`/app/teams`, `/app/teams/[id]`) using aggregate queries.
+- Build Player profile route with season selector, recent matches, and commissioner actions.
+- Handle empty, loading, and error states per sections 6.1 through 6.4.
+- Add lightweight caching strategy (SWR or React Query) for frequently accessed endpoints.
+
+**Deliverables**
+
+- After recording a match, the event appears on the Home feed and in relevant Team and Player pages.
+- Commissioner can move between Teams and Players without full reload.
+
+**Exit criteria**
+
+- Acceptance criteria for sections 6.1 through 6.4 met.
+- Lighthouse accessibility score >= 90 on these pages.
+
+### Phase 4: Analytics Module
+
+**Goals**
+
+- Ship `/app/analytics` with leaderboards, participation tracking, and form tracker.
+- Lay groundwork for future advanced analytics.
+
+**Key tasks**
+
+- Materialize or optimize views referenced in section 6.5; schedule refresh via Supabase jobs if needed.
+- Implement tabbed Analytics UI with filter controls persisted via query params.
+- Add CSV export endpoint or client-side generation.
+- Write performance tests for large sample data (use Supabase seed script).
+- Document data dictionary so calculations are transparent.
+
+**Deliverables**
+
+- Active season analytics render within 500 ms after response.
+- Exports match on-screen data for at least player and team leaderboards.
+
+**Exit criteria**
+
+- Acceptance criteria in section 6.5 met.
+- Load testing confirms analytics endpoints stay under 250 ms P95 with five times expected data volume.
+
+**Status 2025-11-13:** Player, team, participation, and CSV export live on `/app/analytics`. Commissioner-only head-to-head beta enabled with Supabase view `player_head_to_head`, and the client now logs latency events for tracking the 500 ms target. Data dictionary added in `docs/data-dictionary.md`.
+
+### Phase 5: Commissioner Console Enhancements
+
+**Goals**
+
+- Complete admin workflows for invites, roster edits, match corrections, announcements, and audits.
+
+**Key tasks**
+
+- Build `/app/commissioner` overview with shortcuts to users, matches, and seasons.
+- Implement user management UI (invite, resend OTP, deactivate) linked to APIs in section 7.1.
+- Implement match correction UI with audit logging; expose audit viewer.
+- Ship announcement composer with preview and publish capabilities.
+- Add season management controls (activate, close, archive) with confirmation flows.
+- Harden RLS policies and add unit tests verifying commissioner and non-commissioner separation.
+
+**Status 2025-11-13:** Commissioner OTP invite management is live. `/app/commissioner/invites` now supports issuing, resending, and revoking invites via service-backed APIs, and RLS allows only commissioners to audit invite history. Match corrections, announcement publishing, season activation, team creation, and roster moves now flow through `/api/admin/**` endpoints with service-role enforcement, and the new `/app/commissioner/audit` route surfaces `audit_logs` with filtering.
+
+**Deliverables**
+
+- Commissioner can complete each task described in section 7 without direct database access.
+- `audit_logs` table populated and viewable through UI.
+
+**Exit criteria**
+
+- End-to-end tests cover critical commissioner flows and guard against privilege escalation.
+- Documentation updated with a "Commissioner handbook" appendix (how-to steps).
+
+### Phase 6: Polish, Deployment, and Launch Operations
+
+**Goals**
+
+- Tighten UX, improve observability, and prepare public rollout on `bdt.golf`.
+
+**Key tasks**
+
+- Conduct UX polish pass (microcopy, responsive checks, optional dark mode).
+- Add instrumentation (Supabase logs, Sentry, basic analytics) while respecting privacy.
+- Configure GitHub Pages static export and custom domain DNS.
+- Set up environment secrets in GitHub Actions and Pages build pipeline.
+- Run beta testing with commissioner plus sample members; capture feedback and bugfix.
+- Draft post-launch maintenance schedule (backups, season rollover checklists).
+
+**Deliverables**
+
+- Production build deployed to `https://bdt.golf` behind live Supabase project.
+- Ops checklist appended to section 9 (runbook, contact info).
+
+**Exit criteria**
+
+- No severity-one bugs open from beta retrospective.
+- Runbook signed off by commissioner.
+
+### Parallel Tracks and Ongoing Work
+
+- **Design system**: continue evolving shared component library in parallel with feature phases.
+- **Quality**: expand automated tests each phase; maintain code coverage trend chart.
+- **Documentation**: update README and `/docs` after each phase with new endpoints, flows, and troubleshooting notes.
+- **Data hygiene**: schedule monthly review of Supabase RLS policies and access logs.
+
+Revisit the roadmap after each phase retrospective to adjust sequencing, pull forward quick wins, or defer stretch goals.

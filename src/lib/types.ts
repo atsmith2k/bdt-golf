@@ -94,10 +94,12 @@ export interface Match {
 
 export interface MatchSummary {
   id: string;
+  seasonId: string;
   playedOn: string;
   format: MatchFormat;
   status: MatchStatus;
   courseName?: string;
+  notes?: string;
   totalPoints: number;
   participatingTeams: TeamSummary[];
   participants: MatchParticipant[];
@@ -150,12 +152,24 @@ export interface TeamSeasonStats {
 
 export interface OTPInvite {
   id: string;
+  userId: string;
   username: string;
   email?: string;
   code: string;
   expiresAt: string;
   consumedAt?: string;
   createdBy: string;
+  createdAt: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  actorId?: string;
+  actorName?: string;
+  eventType: string;
+  entityType: string;
+  entityId?: string;
+  metadata: Record<string, unknown>;
   createdAt: string;
 }
 
