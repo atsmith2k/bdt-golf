@@ -7,9 +7,10 @@ export interface BadgeProps
 }
 
 const variantClasses = {
-  default: "bg-slate-900 text-white",
-  outline: "border border-slate-300 text-slate-700",
-  success: "bg-emerald-100 text-emerald-700",
+  default: "bg-bdt-royal text-white shadow-[0_8px_16px_rgb(var(--bdt-navy) / 0.24)]",
+  outline:
+    "border border-[rgb(var(--bdt-royal) / 0.28)] bg-[rgb(var(--bdt-ice))] text-bdt-royal",
+  success: "bg-[rgb(32,133,90,0.18)] text-[rgb(22,94,64)]",
 };
 
 export function Badge({

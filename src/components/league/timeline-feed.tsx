@@ -3,6 +3,7 @@
 import * as React from "react";
 import useSWRInfinite from "swr/infinite";
 import type { TimelineEvent } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import { TimelineCard } from "./timeline-card";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
@@ -101,21 +102,25 @@ export function TimelineFeed({ teamId }: { teamId?: string }) {
               type="button"
               onClick={() => handleFilterChange(value)}
               disabled={disabled}
-              className={`rounded-full border px-4 py-2 text-sm transition ${
+              className={cn(
+                "rounded-full border px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--bdt-royal) / 0.45)]",
                 selected
-                  ? "border-slate-900 bg-slate-900 text-white shadow-sm"
-                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
-              } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+                  ? "border-[rgb(var(--bdt-royal) / 0.65)] bg-bdt-royal text-white shadow-[0_12px_28px_rgb(var(--bdt-navy) / 0.25)]"
+                  : "border-[rgb(var(--bdt-royal) / 0.18)] bg-white text-[rgb(var(--bdt-navy) / 0.7)] hover:bg-[rgb(var(--bdt-royal) / 0.08)] hover:text-bdt-navy",
+                disabled && "cursor-not-allowed opacity-40",
+              )}
             >
               {FILTER_LABELS[value]}
               {value === "team" && !teamId ? (
-                <span className="ml-2 text-xs font-semibold uppercase text-slate-400">No team</span>
+                <span className="ml-2 text-xs font-semibold uppercase text-[rgb(var(--bdt-navy) / 0.45)]">
+                  No team
+                </span>
               ) : null}
             </button>
           );
         })}
         {filter === "team" && !teamId ? (
-          <Badge variant="outline" className="text-xs text-slate-500">
+          <Badge variant="outline" className="text-xs font-medium">
             Assign a team to unlock this filter
           </Badge>
         ) : null}
@@ -123,7 +128,7 @@ export function TimelineFeed({ teamId }: { teamId?: string }) {
 
       {error ? (
         <Card>
-          <CardContent className="space-y-3 py-6 text-sm text-red-600">
+          <CardContent className="space-y-3 py-6 text-sm text-bdt-red">
             <p>{error.message}</p>
             <Button
               variant="outline"
@@ -142,7 +147,7 @@ export function TimelineFeed({ teamId }: { teamId?: string }) {
         <TimelineSkeleton />
       ) : events.length === 0 ? (
         <Card>
-          <CardContent className="py-6 text-sm text-slate-500">
+          <CardContent className="py-6 text-sm text-[rgb(var(--bdt-navy) / 0.65)]">
             No activity yet. Record a match to get the league moving.
           </CardContent>
         </Card>
@@ -173,12 +178,12 @@ function TimelineSkeleton() {
   return (
     <div className="space-y-3">
       {Array.from({ length: 3 }).map((_, index) => (
-        <Card key={index} className="border-slate-200 shadow-none">
+        <Card key={index} className="border-[rgb(var(--bdt-royal) / 0.16)] bg-white/80 shadow-none backdrop-blur">
           <CardContent className="flex items-start gap-4 py-4">
-            <div className="h-10 w-10 animate-pulse rounded-full bg-slate-200" />
+            <div className="h-10 w-10 animate-pulse rounded-full bg-[rgb(var(--bdt-royal) / 0.12)]" />
             <div className="flex-1 space-y-3">
-              <div className="h-4 w-1/3 animate-pulse rounded bg-slate-200" />
-              <div className="h-3 w-3/4 animate-pulse rounded bg-slate-200" />
+              <div className="h-4 w-1/3 animate-pulse rounded bg-[rgb(var(--bdt-royal) / 0.16)]" />
+              <div className="h-3 w-3/4 animate-pulse rounded bg-[rgb(var(--bdt-royal) / 0.12)]" />
             </div>
           </CardContent>
         </Card>

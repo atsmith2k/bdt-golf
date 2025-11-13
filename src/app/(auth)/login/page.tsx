@@ -79,21 +79,21 @@ export default function LoginPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
-            <LogIn className="h-5 w-5 text-slate-500" />
+            <LogIn className="h-5 w-5 text-bdt-red" />
             Sign in
           </CardTitle>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-[rgb(var(--bdt-navy) / 0.7)]">
             Use your league-issued username (or email) and password. First-time users should redeem their OTP first.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+            <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
               Username or email
               <input
                 value={identifier}
                 onChange={(event) => setIdentifier(event.target.value)}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                className="w-full rounded-md border border-bdt-royal-soft bg-white/95 px-3 py-2 text-sm shadow-sm focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)]"
                 placeholder="commissioner or you@example.com"
                 autoComplete="username"
                 required
@@ -101,27 +101,27 @@ export default function LoginPage() {
             </label>
           </div>
           <div className="space-y-2">
-            <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+            <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
               Password or one-time code
               <input
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                className="w-full rounded-md border border-bdt-royal-soft bg-white/95 px-3 py-2 text-sm shadow-sm focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)]"
                 autoComplete="current-password"
                 required
               />
             </label>
           </div>
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          {error ? <p className="text-sm text-bdt-red">{error}</p> : null}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Signing in..." : "Continue"}
           </Button>
-          <div className="flex flex-col gap-2 text-sm text-slate-500">
-            <Link href="/otp" className="hover:text-slate-900">
+          <div className="flex flex-col gap-2 text-sm text-[rgb(var(--bdt-navy) / 0.7)]">
+            <Link href="/otp" className="font-medium text-bdt-royal hover:text-bdt-navy">
               First time? Redeem your OTP invite {"->"}
             </Link>
-            <Link href="/reset-password" className="hover:text-slate-900">
+            <Link href="/reset-password" className="font-medium text-bdt-royal hover:text-bdt-navy">
               Forgot password {"->"}
             </Link>
           </div>
@@ -130,4 +130,3 @@ export default function LoginPage() {
     </form>
   );
 }
-

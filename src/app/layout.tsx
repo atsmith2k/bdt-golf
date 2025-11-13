@@ -14,10 +14,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full bg-slate-100">
+    <html lang="en" className="h-full bg-bdt-ice">
       <body
         className={cn(
-          "min-h-screen bg-slate-100 text-slate-900 antialiased font-sans",
+          "min-h-screen bg-bdt-ice text-bdt-navy antialiased font-sans",
         )}
       >
         {children}

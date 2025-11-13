@@ -23,7 +23,7 @@ export function Avatar({ name, src, className, ...props }: AvatarProps) {
   return (
     <div
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-sm font-semibold text-slate-600",
+        "flex h-10 w-10 items-center justify-center rounded-full bg-[rgb(var(--bdt-royal) / 0.18)] text-sm font-semibold text-bdt-royal",
         className,
       )}
       {...props}

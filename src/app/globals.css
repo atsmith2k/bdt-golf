@@ -1,12 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: 248 250 252;
-  --foreground: 15 23 42;
+  --bdt-navy: 2 34 84;
+  --bdt-royal: 12 51 122;
+  --bdt-sky: 16 92 176;
+  --bdt-red: 227 34 55;
+  --bdt-ice: 242 247 255;
+
+  --background: var(--bdt-ice);
+  --foreground: 9 24 58;
   --card: 255 255 255;
-  --border: 226 232 240;
-  --muted: 148 163 184;
-  --accent: 37 99 235;
+  --border: 207 220 241;
+  --muted: 130 148 184;
+  --accent: var(--bdt-red);
 }
 
 @theme inline {
@@ -24,4 +30,55 @@ body {
   background: rgb(var(--background));
   color: rgb(var(--foreground));
   font-family: var(--font-sans);
+}
+
+@layer utilities {
+  .bg-bdt-ice {
+    background-color: rgb(var(--bdt-ice));
+  }
+
+  .bg-bdt-navy {
+    background-color: rgb(var(--bdt-navy));
+  }
+
+  .bg-bdt-royal {
+    background-color: rgb(var(--bdt-royal));
+  }
+
+  .bg-bdt-navy-gradient {
+    background-image: linear-gradient(160deg, rgb(var(--bdt-navy)) 0%, rgb(var(--bdt-royal)) 70%);
+    background-color: rgb(var(--bdt-navy));
+  }
+
+  .text-bdt-navy {
+    color: rgb(var(--bdt-navy));
+  }
+
+  .text-bdt-royal {
+    color: rgb(var(--bdt-royal));
+  }
+
+  .text-bdt-red {
+    color: rgb(var(--bdt-red));
+  }
+
+  .text-bdt-sky {
+    color: rgb(var(--bdt-sky));
+  }
+
+  .border-bdt-royal-soft {
+    border-color: rgb(var(--bdt-royal) / 0.18);
+  }
+
+  .hover\:bg-bdt-navy:hover {
+    background-color: rgb(var(--bdt-navy));
+  }
+
+  .hover\:bg-bdt-ice:hover {
+    background-color: rgb(var(--bdt-ice));
+  }
+
+  .shadow-bdt-soft {
+    box-shadow: 0 18px 45px rgb(var(--bdt-navy) / 0.18);
+  }
 }

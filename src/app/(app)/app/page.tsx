@@ -20,11 +20,11 @@ export default async function DashboardPage() {
           <CardHeader>
             <CardTitle>Welcome to the BDT League HQ</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-slate-600">
+          <CardContent className="space-y-3 text-sm text-[rgb(var(--bdt-navy) / 0.7)]">
             <p>No active season yet. Once you create one, the dashboard will show live standings and activity.</p>
             <p>
               Commissioners can start by visiting the{" "}
-              <Link href="/app/commissioner" className="font-semibold text-slate-900">
+              <Link href="/app/commissioner" className="font-semibold text-bdt-royal hover:text-bdt-navy">
                 commissioner console
               </Link>{" "}
               to create the first season.
@@ -40,19 +40,18 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       <div className="grid gap-8 lg:grid-cols-[2fr,1fr]">
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-slate-900">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="max-w-xl space-y-1">
+              <h1 className="text-2xl font-semibold text-bdt-navy">
                 League timeline
               </h1>
-              <p className="text-sm text-slate-500">
-                The pulse of the season - updated whenever someone logs a match
-                or posts news.
+              <p className="text-sm text-[rgb(var(--bdt-navy) / 0.65)]">
+                The pulse of the season-updated whenever someone logs a match or posts news.
               </p>
             </div>
             <Link
               href="/app/matches/new"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-[rgb(var(--bdt-royal) / 0.25)] px-4 py-2 text-sm font-semibold text-bdt-royal shadow-[0_8px_18px_rgb(var(--bdt-navy) / 0.12)] transition hover:bg-bdt-royal hover:text-white"
             >
               Log a match <ArrowUpRight className="h-4 w-4" />
             </Link>
@@ -68,14 +67,16 @@ export default async function DashboardPage() {
       </div>
       {latestMatch ? (
         <Card>
-          <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Latest match highlight</CardTitle>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-[rgb(var(--bdt-navy) / 0.65)]">
                 Logged {formatDate(latestMatch.playedOn)} - {latestMatch.format.replace(/_/g, " ")}
               </p>
             </div>
-            <Badge variant="outline">{formatPoints(latestMatch.totalPoints)} total</Badge>
+            <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wide">
+              {formatPoints(latestMatch.totalPoints)} total
+            </Badge>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-wrap gap-3">
@@ -83,11 +84,11 @@ export default async function DashboardPage() {
                 <Link
                   key={team.id}
                   href={`/app/teams/${team.id}`}
-                  className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:border-slate-300 hover:text-slate-900"
+                  className="inline-flex items-center gap-2 rounded-full border border-[rgb(var(--bdt-royal) / 0.22)] bg-white/90 px-3 py-2 text-sm text-bdt-navy shadow-[0_8px_18px_rgb(var(--bdt-navy) / 0.08)] transition hover:border-[rgb(var(--bdt-royal) / 0.35)] hover:bg-[rgb(var(--bdt-royal) / 0.08)]"
                 >
                   <span
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: team.color ?? "#1f2937" }}
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ backgroundColor: team.color ?? "#0c337a" }}
                   />
                   {team.name}
                 </Link>
@@ -97,17 +98,17 @@ export default async function DashboardPage() {
               {latestMatch.participants.map((participant) => (
                 <div
                   key={participant.id}
-                  className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm"
+                  className="rounded-2xl border border-[rgb(var(--bdt-royal) / 0.18)] bg-white/90 px-3 py-3 text-sm shadow-[0_12px_24px_rgb(var(--bdt-navy) / 0.08)]"
                 >
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-bdt-navy">
                     {participant.user?.fullName ?? "Unknown player"}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-[rgb(var(--bdt-navy) / 0.6)]">
                     {participant.isWinner ? "Winner" : "Opponent"} -{" "}
                     {formatPoints(participant.pointsAwarded)}
                   </p>
                   {participant.strokes ? (
-                    <p className="mt-2 text-xs text-slate-500">
+                    <p className="mt-2 text-xs text-[rgb(var(--bdt-navy) / 0.6)]">
                       {participant.strokes} strokes
                     </p>
                   ) : null}
@@ -119,7 +120,7 @@ export default async function DashboardPage() {
       ) : (
         <Card>
           <CardContent className="py-6">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[rgb(var(--bdt-navy) / 0.65)]">
               No matches recorded yet. Use the match entry form to log your first result.
             </p>
           </CardContent>

@@ -27,18 +27,18 @@ export function TimelineCard({ event }: { event: TimelineEvent }) {
         : "";
 
   return (
-    <Card className="border-slate-200 shadow-none">
+    <Card className="border-[rgb(var(--bdt-royal) / 0.16)] bg-white/90 shadow-none backdrop-blur">
       <CardContent className="flex items-start gap-4 py-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgb(var(--bdt-royal) / 0.12)] shadow-[0_8px_18px_rgb(var(--bdt-navy) / 0.12)]">
           {icon}
         </div>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+            <h3 className="text-sm font-semibold text-bdt-navy">{title}</h3>
             <Badge variant="outline">{formatDate(event.createdAt)}</Badge>
           </div>
           {body ? (
-            <p className="mt-2 text-sm text-slate-600">{body}</p>
+            <p className="mt-2 text-sm text-[rgb(var(--bdt-navy) / 0.7)]">{body}</p>
           ) : null}
         </div>
       </CardContent>
