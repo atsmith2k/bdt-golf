@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { TimelineCard } from "@/components/league/timeline-card";
 import { PlayerLeaderboard } from "@/components/league/player-leaderboard";
 import { TeamStandingsCard } from "@/components/league/team-standings-card";
-import { getLeagueConfig } from "@/lib/queries";
+import { TimelineFeed } from "@/components/league/timeline-feed";
+import { getLeagueConfig, getUserProfile } from "@/lib/queries";
 import { formatDate, formatPoints } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const league = await getLeagueConfig();
+  const [league, viewer] = await Promise.all([getLeagueConfig(), getUserProfile()]);
+
+  if (!league.activeSeasonId) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Welcome to the BDT League HQ</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-slate-600">
+            <p>No active season yet. Once you create one, the dashboard will show live standings and activity.</p>
+            <p>
+              Commissioners can start by visiting the{" "}
+              <Link href="/app/commissioner" className="font-semibold text-slate-900">
+                commissioner console
+              </Link>{" "}
+              to create the first season.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const latestMatch = league.matches[0];
 
   return (
@@ -36,18 +58,7 @@ export default async function DashboardPage() {
             </Link>
           </div>
           <div className="space-y-4">
-            {league.timeline.map((event) => (
-              <TimelineCard key={event.id} event={event} />
-            ))}
-            {league.timeline.length === 0 && (
-              <Card>
-                <CardContent className="py-6">
-                  <p className="text-sm text-slate-500">
-                    No activity logged yet. Record a match to populate the timeline.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+            <TimelineFeed teamId={viewer?.teamId} />
           </div>
         </div>
         <div className="space-y-6">

@@ -1,16 +1,20 @@
 import { cache } from "react";
 import { createServerSupabaseClient } from "./supabase/server";
+import { mapOtpInvite, type OtpInviteRow } from "./invites";
+import { mapAuditLog, type AuditLogRow } from "./audit";
 import type {
   Announcement,
   LeagueConfig,
   MatchParticipant,
   MatchSummary,
   PlayerSeasonStats,
+  Season,
   TeamSeasonStats,
   TeamSummary,
   TimelineEvent,
   UserProfile,
   OTPInvite,
+  AuditLogEntry,
 } from "./types";
 
 type SeasonRow = {
@@ -100,18 +104,6 @@ type AnnouncementRow = {
   updated_at?: string;
 };
 
-type OTPInviteRow = {
-  id: string;
-  username: string;
-  email?: string | null;
-  otp: string;
-  expires_at: string;
-  used?: boolean | null;
-  consumed_at?: string | null;
-  created_by: string;
-  created_at: string;
-};
-
 const getSupabase = cache(() => createServerSupabaseClient());
 
 export const getActiveSeason = cache(async (): Promise<SeasonRow | null> => {
@@ -126,7 +118,7 @@ export const getActiveSeason = cache(async (): Promise<SeasonRow | null> => {
 
   if (error) {
     console.error("[queries] active season fetch failed", error);
-    throw new Error("Unable to load active season.");
+    return null;
   }
 
   const activeSeason = activeSeasonData as SeasonRow | null;
@@ -160,6 +152,36 @@ function mapUser(row: UserRow): UserProfile {
     createdAt: row.created_at ?? "",
     updatedAt: row.updated_at ?? row.created_at ?? "",
     lastLoginAt: row.last_login_at ?? undefined,
+  };
+}
+
+function mapSeasonRow(row: SeasonRow): Season {
+  const start = row.start_date ? new Date(row.start_date) : new Date();
+  return {
+    id: row.id,
+    name: row.name,
+    year: row.year ?? start.getFullYear(),
+    isActive: row.is_active,
+    startDate: row.start_date,
+    endDate: row.end_date ?? undefined,
+    createdAt: row.created_at ?? row.start_date,
+    updatedAt: row.updated_at ?? row.start_date,
+  };
+}
+
+function createBaseTeamSummary(row: TeamRow): TeamSummary {
+  return {
+    id: row.id,
+    seasonId: row.season_id,
+    name: row.name,
+    slug: row.slug ?? row.name.toLowerCase().replace(/\s+/g, "-"),
+    color: row.color ?? undefined,
+    points: 0,
+    wins: 0,
+    losses: 0,
+    ties: 0,
+    createdAt: row.created_at ?? "",
+    updatedAt: row.updated_at ?? row.created_at ?? "",
   };
 }
 
@@ -312,10 +334,12 @@ function calculateLeagueStats({
 
     return {
       id: match.id,
+      seasonId: match.season_id,
       playedOn: match.match_date,
       format: match.match_type as MatchSummary["format"],
       status: match.status as MatchSummary["status"],
       courseName: match.course ?? undefined,
+      notes: match.notes ?? undefined,
       totalPoints,
       participatingTeams: teamEntries
         .map(([teamId]) => teamMap.get(teamId))
@@ -391,24 +415,47 @@ function mapAnnouncement(row: AnnouncementRow): Announcement {
 
 export const getLeagueConfig = cache(async (): Promise<LeagueConfig> => {
   const supabase = getSupabase();
-  const season = await getActiveSeason();
 
-  if (!season) {
-    throw new Error("No season configured. Create a season in Supabase first.");
+  const [activeSeasonRow, { data: seasonsData, error: seasonsError }, { data: usersData, error: usersError }] =
+    await Promise.all([
+      getActiveSeason(),
+      supabase.from("seasons").select("*").order("start_date", { ascending: false }),
+      supabase.from("users").select("*"),
+    ]);
+
+  if (seasonsError) {
+    console.error("[queries] seasons error", seasonsError);
+  }
+  if (usersError) {
+    console.error("[queries] users error", usersError);
+  }
+
+  const seasonsRows = (seasonsData ?? []) as SeasonRow[];
+  const seasons = seasonsRows.map(mapSeasonRow);
+  const activeSeason = activeSeasonRow ?? seasonsRows[0] ?? null;
+  const userRows = (usersData ?? []) as UserRow[];
+
+  if (!activeSeason) {
+    return {
+      seasons,
+      activeSeasonId: null,
+      teams: [],
+      players: userRows.map(mapUser),
+      matches: [],
+      playerStats: [],
+      teamStats: [],
+      timeline: [],
+      announcements: [],
+    };
   }
 
   const [
     { data: teamsData, error: teamsError },
-    { data: usersData, error: usersError },
     { data: matchesData, error: matchesError },
     { data: timelineData, error: timelineError },
     { data: announcementsData, error: announcementsError },
   ] = await Promise.all([
-    supabase
-      .from("teams")
-      .select("*")
-      .eq("season_id", season.id),
-    supabase.from("users").select("*"),
+    supabase.from("teams").select("*").eq("season_id", activeSeason.id),
     supabase
       .from("matches")
       .select(
@@ -420,32 +467,26 @@ export const getLeagueConfig = cache(async (): Promise<LeagueConfig> => {
         )
         `,
       )
-      .eq("season_id", season.id)
+      .eq("season_id", activeSeason.id)
       .order("match_date", { ascending: false }),
     supabase
       .from("timeline_events")
       .select("*")
-      .eq("season_id", season.id)
+      .eq("season_id", activeSeason.id)
       .order("created_at", { ascending: false })
       .limit(15),
     supabase
       .from("announcements")
       .select("*")
-      .eq("season_id", season.id)
+      .eq("season_id", activeSeason.id)
       .order("created_at", { ascending: false }),
   ]);
 
   if (teamsError) {
     console.error("[queries] teams error", teamsError);
-    throw new Error("Unable to load teams.");
-  }
-  if (usersError) {
-    console.error("[queries] users error", usersError);
-    throw new Error("Unable to load users.");
   }
   if (matchesError) {
     console.error("[queries] matches error", matchesError);
-    throw new Error("Unable to load matches.");
   }
   if (timelineError) {
     console.error("[queries] timeline error", timelineError);
@@ -455,33 +496,26 @@ export const getLeagueConfig = cache(async (): Promise<LeagueConfig> => {
   }
 
   const teamsRows = (teamsData ?? []) as TeamRow[];
-  const userRows = (usersData ?? []) as UserRow[];
   const matchRows = (matchesData ?? []) as MatchRow[];
   const timelineRows = (timelineData ?? []) as TimelineEventRow[];
   const announcementRows = (announcementsData ?? []) as AnnouncementRow[];
 
+  const baseTeams = teamsRows.map(createBaseTeamSummary);
   const derived = calculateLeagueStats({
-    season,
+    season: activeSeason,
     teams: teamsRows,
     users: userRows,
     matches: matchRows,
   });
 
+  const mergedTeamsMap = new Map<string, TeamSummary>();
+  baseTeams.forEach((team) => mergedTeamsMap.set(team.id, team));
+  derived.teams.forEach((team) => mergedTeamsMap.set(team.id, team));
+
   return {
-    seasons: [
-      {
-        id: season.id,
-        name: season.name,
-        year: season.year ?? new Date(season.start_date).getFullYear(),
-        isActive: season.is_active,
-        startDate: season.start_date,
-        endDate: season.end_date ?? undefined,
-        createdAt: season.created_at ?? season.start_date,
-        updatedAt: season.updated_at ?? season.start_date,
-      },
-    ],
-    activeSeasonId: season.id,
-    teams: derived.teams,
+    seasons,
+    activeSeasonId: activeSeason.id,
+    teams: Array.from(mergedTeamsMap.values()),
     players: derived.users,
     matches: derived.matches,
     playerStats: derived.playerStats,
@@ -499,22 +533,49 @@ export async function getOtpInvites(): Promise<OTPInvite[]> {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("[queries] invites error", error);
-    throw new Error("Unable to load OTP invites.");
+    console.warn("[queries] invites error", error);
+    return [];
   }
 
-  const inviteRows = (data ?? []) as OTPInviteRow[];
+  const inviteRows = (data ?? []) as OtpInviteRow[];
 
-  return inviteRows.map((row) => ({
-    id: row.id,
-    username: row.username,
-    email: row.email ?? undefined,
-    code: row.otp,
-    expiresAt: row.expires_at,
-    consumedAt: row.consumed_at ?? undefined,
-    createdBy: row.created_by,
-    createdAt: row.created_at,
-  }));
+  return inviteRows.map(mapOtpInvite);
+}
+
+type AuditLogFilter = {
+  limit?: number;
+  entityType?: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+export async function getAuditLogs(filters: AuditLogFilter = {}): Promise<AuditLogEntry[]> {
+  const supabase = getSupabase();
+  const limit = Math.min(200, Math.max(1, filters.limit ?? 25));
+  let query = supabase
+    .from("audit_logs")
+    .select("*, actor:users!audit_logs_actor_id_fkey(id, display_name)")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (filters.entityType) {
+    query = query.eq("entity_type", filters.entityType);
+  }
+  if (filters.startDate) {
+    query = query.gte("created_at", filters.startDate);
+  }
+  if (filters.endDate) {
+    query = query.lte("created_at", filters.endDate);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("[queries] audit logs error", error);
+    return [];
+  }
+
+  return (data ?? []).map((row) => mapAuditLog(row as AuditLogRow));
 }
 
 export async function getUserProfile() {
@@ -525,8 +586,11 @@ export async function getUserProfile() {
   } = await supabase.auth.getUser();
 
   if (error) {
+    if (error.message?.includes("Auth session missing") || (error as { status?: number }).status === 400) {
+      return null;
+    }
     console.error("[queries] auth user error", error);
-    throw new Error("Unable to load authenticated user.");
+    return null;
   }
 
   if (!user) {
@@ -541,7 +605,7 @@ export async function getUserProfile() {
 
   if (profileError) {
     console.error("[queries] profile fetch error", profileError);
-    throw new Error("Unable to load user profile.");
+    return null;
   }
 
   const profileRow = data as UserRow | null;
