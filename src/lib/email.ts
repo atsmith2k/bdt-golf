@@ -173,7 +173,7 @@ export async function sendMailjetEmail(options: SendMailjetEmailOptions) {
 export async function sendOtpInviteEmail(options: SendOtpInviteEmailOptions) {
   const recipientName = options.displayName?.trim() || options.username;
   const otpCode = options.otpCode.trim().toUpperCase();
-  const username = options.username.trim();
+  const email = options.email.trim();
   const baseUrl = resolveBaseUrl(options.baseUrl);
   const baseOrigin = baseUrl.replace(/\/+$/, "");
   const activationUrl = `${baseOrigin}/otp`;
@@ -190,7 +190,7 @@ export async function sendOtpInviteEmail(options: SendOtpInviteEmailOptions) {
     "",
     "To finish setting up your account:",
     `1. Open ${activationUrl}`,
-    `2. Enter your username: ${username}`,
+    `2. Enter your email: ${email}`,
     `3. Enter the one-time password: ${otpCode}`,
     "4. Choose a new password and submit the form.",
     "",
@@ -205,7 +205,7 @@ export async function sendOtpInviteEmail(options: SendOtpInviteEmailOptions) {
   const escapedActivationUrl = escapeHtml(activationUrl);
   const escapedCommissionerLine = escapeHtml(commissionerLine);
   const escapedRecipient = escapeHtml(recipientName);
-  const escapedUsername = escapeHtml(username);
+  const escapedEmail = escapeHtml(email);
   const escapedOtp = escapeHtml(otpCode);
   const escapedExpiry = escapeHtml(expiryText);
   const escapedLogoUrl = escapeHtml(logoUrl);
@@ -228,7 +228,7 @@ export async function sendOtpInviteEmail(options: SendOtpInviteEmailOptions) {
             <p style="margin:0 0 12px;">To finish setting up your account:</p>
             <ol style="margin:0 0 20px 20px;padding:0;color:#021e4c;">
               <li style="margin-bottom:10px;">Open <a href="${escapedActivationUrl}" style="color:#0c337a;font-weight:600;text-decoration:none;">${escapedActivationUrl}</a></li>
-              <li style="margin-bottom:10px;">Enter your username: <strong>${escapedUsername}</strong></li>
+              <li style="margin-bottom:10px;">Enter your email: <strong>${escapedEmail}</strong></li>
               <li style="margin-bottom:10px;">Enter the one-time password shown below.</li>
               <li>Choose a new password and submit the form.</li>
             </ol>
