@@ -83,18 +83,18 @@ export default function LoginPage() {
             Sign in
           </CardTitle>
           <p className="mt-2 text-sm text-[rgb(var(--bdt-navy) / 0.7)]">
-            Use your league-issued username (or email) and password. First-time users should redeem their OTP first.
+            Use your email (or league-issued username) and password. First-time users should redeem their OTP first.
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
-              Username or email
+              Email or username
               <input
                 value={identifier}
                 onChange={(event) => setIdentifier(event.target.value)}
                 className="w-full rounded-md border border-bdt-royal-soft bg-white/95 px-3 py-2 text-sm shadow-sm focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)]"
-                placeholder="commissioner or you@example.com"
+                placeholder="email or username"
                 autoComplete="username"
                 required
               />
