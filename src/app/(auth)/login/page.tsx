@@ -33,7 +33,7 @@ export default function LoginPage() {
       .maybeSingle();
 
     if (error) {
-      throw new Error("Unable to look up username. Contact the commissioner if this persists.");
+      throw new Error("Unable to look up username. Contact the commissioner if this persists.", error);
     }
     if (!data?.email) {
       throw new Error("Username found, but no email is linked to the account yet.");
