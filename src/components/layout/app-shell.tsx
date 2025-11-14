@@ -45,11 +45,11 @@ function NavLinks({
         const activeClasses =
           tone === "glass"
             ? "bg-white/22 text-white shadow-sm shadow-[0_8px_20px_rgba(0,0,0,0.16)] backdrop-blur"
-            : "bg-[rgb(var(--bdt-royal) / 0.1)] text-bdt-navy shadow-[0_6px_18px_rgb(var(--bdt-navy) / 0.08)]";
+            : "bg-bdt-royal-tint text-bdt-navy shadow-[0_6px_18px_rgb(var(--bdt-navy) / 0.08)]";
         const inactiveClasses =
           tone === "glass"
             ? "text-white/80 hover:bg-white/12 hover:text-white"
-            : "text-[rgb(var(--bdt-navy) / 0.7)] hover:bg-[rgb(var(--bdt-royal) / 0.12)] hover:text-bdt-navy";
+            : "text-bdt-muted hover:bg-bdt-panel hover:text-bdt-navy";
 
         return (
           <Link
@@ -83,7 +83,7 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between border-b border-b-[rgb(var(--bdt-royal) / 0.12)] bg-white/90 px-6 py-4 backdrop-blur">
         <div className="flex flex-col">
-          <span className="text-xs font-medium uppercase tracking-wide text-[rgb(var(--bdt-navy) / 0.55)]">
+          <span className="text-xs font-medium uppercase tracking-wide text-bdt-soft">
             Active Season
           </span>
           <span className="text-sm font-semibold text-bdt-navy">
@@ -188,11 +188,11 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
         {mobileOpen && (
           <div className="lg:hidden">
             <div className="fixed inset-0 z-40 bg-slate-900/40" />
-            <div className="fixed inset-y-0 left-0 z-50 flex w-[min(80vw,20rem)] max-w-sm flex-col overflow-y-auto rounded-r-3xl bg-white/95 pb-8 shadow-[0_30px_60px_rgba(2,34,84,0.38)] backdrop-blur">
+            <div className="fixed inset-y-0 left-0 z-50 flex w-[min(80vw,20rem)] max-w-sm flex-col overflow-y-auto rounded-r-3xl border border-bdt-veil bg-bdt-glass pb-8 shadow-[0_30px_60px_rgba(2,34,84,0.38)]">
               <div className="bg-gradient-to-br from-[rgb(var(--bdt-ice))] via-white to-white px-6 pb-4 pt-6 shadow-[0_12px_24px_rgb(var(--bdt-navy) / 0.08)]">
                 <div className="mb-6 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[rgb(var(--bdt-royal) / 0.12)] shadow-[0_10px_24px_rgb(var(--bdt-navy) / 0.1)]">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-bdt-royal-tint shadow-[0_10px_24px_rgb(var(--bdt-navy) / 0.1)]">
                       <Image
                         src="/bdt-transparent-logo.png"
                         alt="BDT Tour crest"
@@ -215,19 +215,19 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
                     variant="ghost"
                     size="icon"
                     onClick={() => setMobileOpen(false)}
-                    className="rounded-full bg-[rgb(var(--bdt-ice))] text-bdt-royal hover:bg-[rgb(var(--bdt-royal) / 0.12)]"
+                    className="rounded-full bg-bdt-panel text-bdt-royal hover:bg-bdt-royal-tint"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <p className="text-xs font-medium uppercase tracking-wide text-[rgb(var(--bdt-navy) / 0.55)]">
+                <p className="text-xs font-medium uppercase tracking-wide text-bdt-soft">
                   Navigation
                 </p>
               </div>
               <div className="flex flex-1 flex-col px-6 py-6">
                 <div className="space-y-6">
                   <div>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[rgb(var(--bdt-navy) / 0.6)]">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-bdt-muted">
                       Overview
                     </p>
                     <NavLinks
@@ -239,7 +239,7 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
                   </div>
                   {commissionerLinks.length > 0 && (
                     <div>
-                      <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-[rgb(var(--bdt-navy) / 0.6)]">
+                      <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-bdt-muted">
                         <Shield className="h-3 w-3" />
                         Commissioner
                       </p>
@@ -261,7 +261,7 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
                 >
                   Go to dashboard
                 </Link>
-                <div className="flex items-center justify-between rounded-2xl border border-[rgb(var(--bdt-royal) / 0.12)] bg-[rgb(var(--bdt-ice))] px-4 py-3 text-sm text-[rgb(var(--bdt-navy) / 0.75)]">
+                <div className="flex items-center justify-between rounded-2xl border border-[rgb(var(--bdt-royal) / 0.12)] bg-bdt-panel px-4 py-3 text-sm text-[rgb(var(--bdt-navy) / 0.75)]">
                   <div className="flex items-center gap-3">
                     <Avatar
                       name={user.fullName}
@@ -271,7 +271,7 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
                       <span className="font-semibold text-bdt-navy">
                         {user.fullName}
                       </span>
-                      <span className="text-xs uppercase tracking-wide text-[rgb(var(--bdt-navy) / 0.55)]">
+                      <span className="text-xs uppercase tracking-wide text-bdt-soft">
                         Signed in
                       </span>
                     </div>

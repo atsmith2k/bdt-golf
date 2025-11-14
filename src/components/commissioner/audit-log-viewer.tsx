@@ -59,17 +59,17 @@ export function AuditLogViewer({ logs, initialFilters }: AuditLogViewerProps) {
     <div className="space-y-6">
       <form
         onSubmit={handleSubmit}
-        className="grid gap-4 rounded-lg border border-slate-200 bg-white px-4 py-4 sm:grid-cols-2 lg:grid-cols-5"
+        className="grid gap-4 rounded-lg border border-bdt-royal-soft bg-white/95 px-4 py-4 shadow-[0_12px_30px_rgb(var(--bdt-navy) / 0.08)] sm:grid-cols-2 lg:grid-cols-5"
       >
-        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-1 text-sm font-medium text-bdt-navy">
           Entity type
           <Input
             value={entityType}
             onChange={(event) => setEntityType(event.target.value)}
-            placeholder="team, user, match…"
+            placeholder="team, user, match..."
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-1 text-sm font-medium text-bdt-navy">
           From
           <Input
             type="datetime-local"
@@ -77,7 +77,7 @@ export function AuditLogViewer({ logs, initialFilters }: AuditLogViewerProps) {
             onChange={(event) => setFrom(event.target.value)}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-1 text-sm font-medium text-bdt-navy">
           To
           <Input
             type="datetime-local"
@@ -85,7 +85,7 @@ export function AuditLogViewer({ logs, initialFilters }: AuditLogViewerProps) {
             onChange={(event) => setTo(event.target.value)}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+        <label className="flex flex-col gap-1 text-sm font-medium text-bdt-navy">
           Limit
           <Input
             type="number"
@@ -106,22 +106,22 @@ export function AuditLogViewer({ logs, initialFilters }: AuditLogViewerProps) {
         </CardHeader>
         <CardContent>
           {logs.length === 0 ? (
-            <p className="text-sm text-slate-500">No audit events matched the filters.</p>
+            <p className="text-sm text-bdt-soft">No audit events matched the filters.</p>
           ) : (
-            <ul className="divide-y divide-slate-200">
+            <ul className="divide-y divide-[rgb(var(--bdt-royal) / 0.12)]">
               {logs.map((log) => (
                 <li key={log.id} className="py-3 text-sm">
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="font-semibold text-slate-900">
+                      <p className="font-semibold text-bdt-navy">
                         {log.eventType.replace(/_/g, " ")}
                       </p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-bdt-soft">
                         {log.actorName ?? "Unknown commissioner"}
-                        {log.entityType ? ` · ${log.entityType} ${log.entityId ?? ""}` : ""}
+                        {log.entityType ? ` - ${log.entityType} ${log.entityId ?? ""}` : ""}
                       </p>
                     </div>
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-bdt-soft">
                       {formatDate(log.createdAt, {
                         month: "short",
                         day: "numeric",
@@ -131,7 +131,7 @@ export function AuditLogViewer({ logs, initialFilters }: AuditLogViewerProps) {
                     </span>
                   </div>
                   {Object.keys(log.metadata ?? {}).length > 0 ? (
-                    <pre className="mt-2 overflow-x-auto rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                    <pre className="mt-2 overflow-x-auto rounded-md bg-bdt-panel px-3 py-2 text-xs text-bdt-soft">
                       {JSON.stringify(log.metadata, null, 2)}
                     </pre>
                   ) : null}

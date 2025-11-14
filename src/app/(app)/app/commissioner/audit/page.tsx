@@ -27,8 +27,8 @@ export default async function AuditLogPage({ searchParams }: { searchParams: Sea
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Audit log</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-2xl font-semibold text-bdt-navy">Audit log</h1>
+        <p className="text-sm text-bdt-muted">
           Filter commissioner activity by entity type or date range to investigate changes.
         </p>
       </div>

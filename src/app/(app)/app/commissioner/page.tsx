@@ -29,6 +29,28 @@ export default async function CommissionerPage() {
   ]);
   const openInvites = invites.filter((invite) => !invite.consumedAt);
   const matchesForCorrections = league.matches.slice(0, 15);
+  const commissionerMetrics = [
+    {
+      label: "Open invites",
+      value: openInvites.length,
+      caption: "Pending onboarding",
+    },
+    {
+      label: "Season teams",
+      value: league.teams.length,
+      caption: "Across all divisions",
+    },
+    {
+      label: "Rostered players",
+      value: league.players.length,
+      caption: "Active accounts",
+    },
+    {
+      label: "Matches logged",
+      value: league.matches.length,
+      caption: "History available",
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -42,6 +64,20 @@ export default async function CommissionerPage() {
         <Badge variant="outline" className="uppercase tracking-wide">
           Commissioner-only
         </Badge>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {commissionerMetrics.map((metric) => (
+          <Card key={metric.label} className="bg-white/90 px-5 py-4 shadow-[0_16px_30px_rgb(var(--bdt-navy)/0.12)]">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wide text-bdt-soft">
+                {metric.label}
+              </span>
+              <span className="text-2xl font-bold text-bdt-navy">{metric.value}</span>
+              <span className="text-xs text-bdt-soft">{metric.caption}</span>
+            </div>
+          </Card>
+        ))}
       </div>
 
       <div id="season-manager">

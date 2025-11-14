@@ -52,6 +52,16 @@ export function TeamsClient({
 
   const teams = data?.teams ?? [];
   const activeSeason = data?.season;
+  const teamsAggregate = teams.reduce(
+    (accumulator, team) => {
+      return {
+        rostered: accumulator.rostered + team.rosterSize,
+        matches: accumulator.matches + team.matchesPlayed,
+        points: accumulator.points + team.points,
+      };
+    },
+    { rostered: 0, matches: 0, points: 0 },
+  );
 
   return (
     <div className="space-y-8">
@@ -82,6 +92,40 @@ export function TeamsClient({
             {teams.length} team{teams.length === 1 ? "" : "s"}
           </Badge>
         </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Card className="px-5 py-4">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wide text-bdt-soft">
+              Active season
+            </span>
+            <span className="text-lg font-semibold text-bdt-navy">
+              {activeSeason?.name ?? "Unassigned"}
+            </span>
+            <span className="text-xs text-bdt-soft">
+              {activeSeason?.isActive ? "Currently tracking scores" : "Archived or upcoming"}
+            </span>
+          </div>
+        </Card>
+        <Card className="px-5 py-4">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wide text-bdt-soft">
+              Total rostered players
+            </span>
+            <span className="text-lg font-semibold text-bdt-navy">{teamsAggregate.rostered}</span>
+            <span className="text-xs text-bdt-soft">Across {teams.length} teams</span>
+          </div>
+        </Card>
+        <Card className="px-5 py-4 lg:col-span-1">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wide text-bdt-soft">
+              Matches logged
+            </span>
+            <span className="text-lg font-semibold text-bdt-navy">{teamsAggregate.matches}</span>
+            <span className="text-xs text-bdt-soft">Season totals to date</span>
+          </div>
+        </Card>
       </div>
 
       {error ? (

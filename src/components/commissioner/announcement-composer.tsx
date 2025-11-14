@@ -80,12 +80,12 @@ export function AnnouncementComposer({ seasons, defaultSeasonId }: AnnouncementC
 
       {hasSeasons ? (
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+          <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
             Season
             <select
               value={seasonId}
               onChange={(event) => setSeasonId(event.target.value)}
-              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+              className="rounded-lg border border-bdt-royal-soft bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
             >
               {seasons.map((season) => (
                 <option key={season.id} value={season.id}>
@@ -94,7 +94,7 @@ export function AnnouncementComposer({ seasons, defaultSeasonId }: AnnouncementC
               ))}
             </select>
           </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+          <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
             Title
             <Input
               value={title}
@@ -105,12 +105,12 @@ export function AnnouncementComposer({ seasons, defaultSeasonId }: AnnouncementC
           </label>
         </div>
       ) : (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-bdt-soft">
           Create a season before publishing announcements.
         </p>
       )}
 
-      <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+      <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
         Message
         <Textarea
           rows={5}
@@ -120,12 +120,12 @@ export function AnnouncementComposer({ seasons, defaultSeasonId }: AnnouncementC
         />
       </label>
 
-      <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+      <label className="flex items-center gap-2 text-sm font-medium text-bdt-navy">
         <input
           type="checkbox"
           checked={pinned}
           onChange={(event) => setPinned(event.target.checked)}
-          className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/40"
+          className="h-4 w-4 rounded border-bdt-royal-soft text-bdt-navy focus:ring-[rgb(var(--bdt-royal) / 0.3)] focus:ring-offset-1"
         />
         Pin to top of announcements
       </label>
@@ -145,9 +145,9 @@ export function AnnouncementComposer({ seasons, defaultSeasonId }: AnnouncementC
       </div>
 
       {previewMode ? (
-        <div className="rounded-md border border-slate-200 bg-white px-4 py-3">
-          <h3 className="text-base font-semibold text-slate-900">{title || "Untitled"}</h3>
-          <p className="mt-2 whitespace-pre-line text-sm text-slate-600">{body}</p>
+        <div className="rounded-xl border border-bdt-royal-soft bg-white/95 px-4 py-3 shadow-[0_12px_24px_rgb(var(--bdt-navy) / 0.08)]">
+          <h3 className="text-base font-semibold text-bdt-navy">{title || "Untitled"}</h3>
+          <p className="mt-2 whitespace-pre-line text-sm text-bdt-soft">{body}</p>
           {pinned ? (
             <span className="mt-3 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-700">
               Pinned

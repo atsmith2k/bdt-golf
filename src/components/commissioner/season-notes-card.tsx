@@ -12,16 +12,16 @@ export function SeasonNotesCard() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <ClipboardList className="h-5 w-5 text-slate-500" />
+          <ClipboardList className="h-5 w-5 text-bdt-muted" />
           Season checklist
         </CardTitle>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-bdt-muted">
           Use this scratchpad while we wire persistence in Supabase.
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-bdt-muted">
             Notes for upcoming event
           </label>
           <Textarea
@@ -31,7 +31,7 @@ export function SeasonNotesCard() {
             placeholder="Pairings meeting, mid-season trade deadline, etc."
           />
         </div>
-        <div className="rounded-lg border border-dashed border-slate-300 p-4 text-xs text-slate-500">
+        <div className="rounded-lg border border-dashed border-bdt-royal-soft p-4 text-xs text-bdt-muted">
           Next up: create a Supabase table for commissioner tasks so this UI becomes collaborative.
         </div>
       </CardContent>

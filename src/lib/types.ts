@@ -105,6 +105,42 @@ export interface MatchSummary {
   participants: MatchParticipant[];
 }
 
+export interface MatchTeamResult {
+  teamId?: string;
+  name: string;
+  slug?: string;
+  color?: string;
+  points: number;
+  isWinner: boolean;
+}
+
+export interface MatchReporter {
+  id: string;
+  fullName: string;
+  username: string;
+  email?: string;
+}
+
+export interface MatchDetail {
+  id: string;
+  seasonId: string;
+  season: Season;
+  playedOn: string;
+  format: MatchFormat;
+  status: MatchStatus;
+  visibility: MatchVisibility;
+  courseName?: string;
+  notes?: string;
+  totalPoints: number;
+  createdAt: string;
+  updatedAt: string;
+  reportedBy?: MatchReporter;
+  participants: MatchParticipant[];
+  teamResults: MatchTeamResult[];
+  timelineEvents: TimelineEvent[];
+  auditLogs: AuditLogEntry[];
+}
+
 export interface Announcement {
   id: string;
   seasonId: string;

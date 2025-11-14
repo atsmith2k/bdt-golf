@@ -16,7 +16,7 @@ interface MatchCorrectionsProps {
 }
 
 const STATUS_COLORS: Record<MatchSummary["status"], string> = {
-  scheduled: "bg-slate-100 text-slate-600",
+  scheduled: "bg-bdt-panel text-bdt-soft",
   submitted: "bg-amber-100 text-amber-700",
   validated: "bg-emerald-100 text-emerald-700",
   voided: "bg-rose-100 text-rose-700",
@@ -104,24 +104,24 @@ export function MatchCorrectionsPanel({ matches }: MatchCorrectionsProps) {
     <Card>
       <CardHeader>
         <CardTitle>Match corrections</CardTitle>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-bdt-muted">
           Void or restore match results. Updates are logged to the audit trail and timeline.
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
         {items.length === 0 ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-bdt-muted">
             No matches recorded yet. Capture results before using match corrections.
           </p>
         ) : (
           <>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+              <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
                 Match
                 <select
                   value={selectedMatchId}
                   onChange={(event) => setSelectedMatchId(event.target.value)}
-                  className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                  className="rounded-md border border-bdt-royal-soft bg-white px-3 py-2 text-sm shadow-sm focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)]"
                 >
                   {items.map((match) => (
                     <option key={match.id} value={match.id}>
@@ -130,7 +130,7 @@ export function MatchCorrectionsPanel({ matches }: MatchCorrectionsProps) {
                   ))}
                 </select>
               </label>
-              <div className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+              <div className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
                 Status
                 {selectedMatch ? (
                   <span
@@ -139,26 +139,26 @@ export function MatchCorrectionsPanel({ matches }: MatchCorrectionsProps) {
                     {selectedMatch.status}
                   </span>
                 ) : (
-                  <span className="text-sm text-slate-500">Select a match to view status.</span>
+                  <span className="text-sm text-bdt-muted">Select a match to view status.</span>
                 )}
               </div>
             </div>
 
             {selectedMatch ? (
               <>
-                <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                  <p className="font-semibold text-slate-900">
+                <div className="rounded-lg border border-bdt-royal-soft bg-bdt-panel px-4 py-3 text-sm text-bdt-soft">
+                  <p className="font-semibold text-bdt-navy">
                     {formatDate(selectedMatch.playedOn)} · {selectedMatch.format.replace(/_/g, " ")}
                   </p>
                   {selectedMatch.courseName ? (
-                    <p className="text-xs text-slate-500">Course: {selectedMatch.courseName}</p>
+                    <p className="text-xs text-bdt-muted">Course: {selectedMatch.courseName}</p>
                   ) : null}
-                  <p className="mt-2 text-xs uppercase tracking-wide text-slate-500">Participants</p>
-                  <ul className="mt-1 divide-y divide-slate-200">
+                  <p className="mt-2 text-xs uppercase tracking-wide text-bdt-muted">Participants</p>
+                  <ul className="mt-1 divide-y divide-[rgb(var(--bdt-royal) / 0.12)]">
                     {selectedMatch.participants.map((participant) => (
                       <li key={participant.id} className="flex items-center justify-between py-1">
                         <span>{participant.user?.fullName ?? participant.userId}</span>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-bdt-muted">
                           {participant.pointsAwarded.toFixed(1)} pts
                           {participant.isWinner ? " · Winner" : ""}
                         </span>
@@ -166,7 +166,7 @@ export function MatchCorrectionsPanel({ matches }: MatchCorrectionsProps) {
                     ))}
                   </ul>
                   {selectedMatch.notes ? (
-                    <p className="mt-2 text-xs text-slate-500 whitespace-pre-line">
+                    <p className="mt-2 text-xs text-bdt-muted whitespace-pre-line">
                       Notes: {selectedMatch.notes}
                     </p>
                   ) : null}
@@ -184,14 +184,14 @@ export function MatchCorrectionsPanel({ matches }: MatchCorrectionsProps) {
                 />
 
                 {selectedMatch.status === "voided" ? (
-                  <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                  <label className="flex items-center gap-2 text-sm font-medium text-bdt-navy">
                     Restore as
                     <select
                       value={restoreStatus}
                       onChange={(event) =>
                         setRestoreStatus(event.target.value as typeof restoreStatus)
                       }
-                      className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                      className="rounded-md border border-bdt-royal-soft bg-white px-3 py-2 text-sm shadow-sm focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)]"
                     >
                       <option value="submitted">Submitted</option>
                       <option value="validated">Validated</option>

@@ -5,7 +5,9 @@ import { mapAuditLog, type AuditLogRow } from "./audit";
 import type {
   Announcement,
   LeagueConfig,
+  MatchDetail,
   MatchParticipant,
+  MatchReporter,
   MatchSummary,
   PlayerSeasonStats,
   Season,
@@ -62,6 +64,7 @@ type MatchRow = {
   course?: string | null;
   notes?: string | null;
   status: string;
+  visibility?: string | null;
   created_at?: string;
   updated_at?: string;
   created_by?: string | null;
@@ -105,6 +108,17 @@ type AnnouncementRow = {
 };
 
 const getSupabase = cache(() => createServerSupabaseClient());
+
+function toNumber(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
 
 export const getActiveSeason = cache(async (): Promise<SeasonRow | null> => {
   const supabase = getSupabase();
@@ -524,6 +538,200 @@ export const getLeagueConfig = cache(async (): Promise<LeagueConfig> => {
     announcements: announcementRows.map(mapAnnouncement),
   };
 });
+
+export async function getMatchDetail(matchId: string): Promise<MatchDetail | null> {
+  if (!matchId) {
+    return null;
+  }
+
+  const supabase = getSupabase();
+  const activeSeason = await getActiveSeason();
+  if (!activeSeason) {
+    return null;
+  }
+
+  const { data: matchData, error: matchError } = await supabase
+    .from("matches")
+    .select(
+      `
+        *,
+        match_participants (
+          *,
+          users (*)
+        )
+      `,
+    )
+    .eq("id", matchId)
+    .eq("season_id", activeSeason.id)
+    .maybeSingle();
+
+  if (matchError) {
+    console.error("[queries] match detail fetch error", matchError);
+    return null;
+  }
+
+  if (!matchData) {
+    return null;
+  }
+
+  const matchRow = matchData as MatchRow;
+  const participantRows = (matchRow.match_participants ?? []) as MatchParticipantRow[];
+
+  const participants: MatchParticipant[] = participantRows.map((participant) => {
+    const pointsAwarded = toNumber(participant.points_awarded);
+    const strokesValue =
+      participant.strokes === null || participant.strokes === undefined ? undefined : toNumber(participant.strokes);
+    const positionValue =
+      participant.position === null || participant.position === undefined
+        ? undefined
+        : Number(participant.position);
+    const position = positionValue !== undefined && Number.isFinite(positionValue) ? positionValue : undefined;
+    const user = participant.users ? mapUser(participant.users as UserRow) : undefined;
+
+    return {
+      id: participant.id,
+      matchId: participant.match_id,
+      userId: participant.user_id,
+      teamId: participant.team_id ?? undefined,
+      pointsAwarded,
+      strokes: strokesValue,
+      position,
+      isWinner: false,
+      createdAt: participant.created_at ?? matchRow.match_date,
+      updatedAt: participant.updated_at ?? participant.created_at ?? matchRow.match_date,
+      user,
+    };
+  });
+
+  const teamIds = Array.from(
+    new Set(
+      participants
+        .map((participant) => participant.teamId)
+        .filter((value): value is string => Boolean(value)),
+    ),
+  );
+
+  let teamLookup = new Map<string, TeamSummary>();
+  if (teamIds.length > 0) {
+    const { data: teamData, error: teamError } = await supabase.from("teams").select("*").in("id", teamIds);
+    if (teamError) {
+      console.error("[queries] match detail team fetch error", teamError);
+    } else {
+      const summaries = (teamData ?? []) as TeamRow[];
+      teamLookup = new Map(
+        summaries.map((row) => {
+          const summary = createBaseTeamSummary(row);
+          return [summary.id, summary];
+        }),
+      );
+    }
+  }
+
+  const teamPoints = new Map<string, number>();
+  participants.forEach((participant) => {
+    if (!participant.teamId) {
+      return;
+    }
+    const current = teamPoints.get(participant.teamId) ?? 0;
+    teamPoints.set(participant.teamId, current + participant.pointsAwarded);
+  });
+
+  const teamEntries = Array.from(teamPoints.entries());
+  const maxPoints = teamEntries.length > 0 ? Math.max(...teamEntries.map(([, total]) => total)) : 0;
+  const winningTeamIds = new Set(
+    teamEntries
+      .filter(([, total]) => total === maxPoints)
+      .map(([teamId]) => teamId),
+  );
+  const isTie = winningTeamIds.size > 1;
+
+  participants.forEach((participant) => {
+    if (!participant.teamId) {
+      participant.isWinner = false;
+      return;
+    }
+    participant.isWinner = !isTie && winningTeamIds.has(participant.teamId);
+  });
+
+  const teamResults = teamEntries
+    .map(([teamId, points]) => {
+      const summary = teamLookup.get(teamId);
+      return {
+        teamId,
+        name: summary?.name ?? "Unknown team",
+        slug: summary?.slug,
+        color: summary?.color,
+        points,
+        isWinner: !isTie && winningTeamIds.has(teamId),
+      };
+    })
+    .sort((a, b) => b.points - a.points);
+
+  const totalPoints = participants.reduce((sum, participant) => sum + participant.pointsAwarded, 0);
+
+  const [{ data: timelineData, error: timelineError }, { data: auditData, error: auditError }] = await Promise.all([
+    supabase
+      .from("timeline_events")
+      .select("*")
+      .eq("match_id", matchRow.id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("audit_logs")
+      .select("*, actor:users!audit_logs_actor_id_fkey(id, display_name)")
+      .eq("entity_type", "match")
+      .eq("entity_id", matchRow.id)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const timelineEvents = timelineError
+    ? []
+    : ((timelineData ?? []) as TimelineEventRow[]).map((event) => mapTimeline(event));
+
+  const auditLogs = auditError
+    ? []
+    : ((auditData ?? []) as AuditLogRow[]).map((row) => mapAuditLog(row));
+
+  let reportedBy: MatchReporter | undefined;
+  if (matchRow.created_by) {
+    const { data: reporterData, error: reporterError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", matchRow.created_by)
+      .maybeSingle();
+
+    if (reporterError) {
+      console.error("[queries] match detail reporter fetch error", reporterError);
+    } else if (reporterData) {
+      const profile = mapUser(reporterData as UserRow);
+      reportedBy = {
+        id: profile.id,
+        fullName: profile.fullName,
+        username: profile.username,
+        email: profile.email,
+      };
+    }
+  }
+
+  return {
+    id: matchRow.id,
+    seasonId: matchRow.season_id,
+    season: mapSeasonRow(activeSeason),
+    playedOn: matchRow.match_date,
+    format: matchRow.match_type as MatchDetail["format"],
+    status: matchRow.status as MatchDetail["status"],
+    visibility: (matchRow.visibility ?? "private") as MatchDetail["visibility"],
+    courseName: matchRow.course ?? undefined,
+    notes: matchRow.notes ?? undefined,
+    totalPoints,
+    createdAt: matchRow.created_at ?? matchRow.match_date,
+    updatedAt: matchRow.updated_at ?? matchRow.created_at ?? matchRow.match_date,
+    reportedBy,
+    participants,
+    teamResults,
+    timelineEvents,
+    auditLogs,
+  };
+}
 
 export async function getOtpInvites(): Promise<OTPInvite[]> {
   const supabase = getSupabase();

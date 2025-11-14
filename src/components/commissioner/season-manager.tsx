@@ -95,16 +95,16 @@ export function SeasonManager({ seasons, activeSeasonId }: SeasonManagerProps) {
     <Card id="season-manager">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-slate-500" />
+          <Shield className="h-5 w-5 text-bdt-muted" />
           Season management
         </CardTitle>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-bdt-muted">
           Create seasons and choose which one is active. Activating a season disables all others.
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
         <form onSubmit={handleCreate} className="grid gap-4 sm:grid-cols-3">
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700 sm:col-span-1">
+          <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy sm:col-span-1">
             Season name
             <Input
               value={name}
@@ -113,7 +113,7 @@ export function SeasonManager({ seasons, activeSeasonId }: SeasonManagerProps) {
               required
             />
           </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+          <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
             Start date
             <Input
               type="date"
@@ -122,7 +122,7 @@ export function SeasonManager({ seasons, activeSeasonId }: SeasonManagerProps) {
               required
             />
           </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+          <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
             End date (optional)
             <Input
               type="date"
@@ -130,12 +130,12 @@ export function SeasonManager({ seasons, activeSeasonId }: SeasonManagerProps) {
               onChange={(event) => setEndDate(event.target.value)}
             />
           </label>
-          <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-bdt-navy">
             <input
               type="checkbox"
               checked={makeActive}
               onChange={(event) => setMakeActive(event.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/40"
+              className="h-4 w-4 rounded border-bdt-royal-soft text-bdt-navy focus:ring-[rgb(var(--bdt-royal) / 0.4)]"
             />
             Set active after creating
           </label>
@@ -155,23 +155,23 @@ export function SeasonManager({ seasons, activeSeasonId }: SeasonManagerProps) {
           </p>
         ) : null}
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-bdt-muted">
             Seasons
           </p>
           {seasons.length === 0 ? (
-            <p className="text-sm text-slate-500">No seasons created yet.</p>
+            <p className="text-sm text-bdt-muted">No seasons created yet.</p>
           ) : (
-            <ul className="space-y-2 text-sm text-slate-600">
+            <ul className="space-y-2 text-sm text-bdt-soft">
               {seasons.map((season) => (
                 <li
                   key={season.id}
-                  className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 rounded-lg border border-bdt-royal-soft bg-white p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <p className="font-semibold text-slate-900">
+                    <p className="font-semibold text-bdt-navy">
                       {season.name} ({season.year})
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-bdt-muted">
                       {season.startDate}
                       {season.endDate ? ` - ${season.endDate}` : ""}
                     </p>

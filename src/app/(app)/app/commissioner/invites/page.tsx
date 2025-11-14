@@ -14,12 +14,12 @@ export default async function InvitesPage() {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">OTP invites</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-bdt-navy">OTP invites</h1>
+          <p className="text-sm text-bdt-muted">
             Track one-time password lifecycle and resend codes.
           </p>
         </div>
-        <Badge variant="outline">
+        <Badge variant="outline" className="uppercase tracking-wide text-xs font-semibold">
           {openInvites.length} open invite{openInvites.length === 1 ? "" : "s"}
         </Badge>
       </div>

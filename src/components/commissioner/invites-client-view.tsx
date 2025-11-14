@@ -150,14 +150,14 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
 
   return (
     <>
-      <div className="flex flex-col gap-4 border-b border-slate-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2">
-          <Search className="h-4 w-4 text-slate-400" />
+      <div className="flex flex-col gap-4 border-b border-bdt-royal-soft px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2 rounded-lg border border-bdt-royal-soft bg-white px-3 py-2">
+          <Search className="h-4 w-4 text-bdt-quiet" />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search invites"
-            className="w-full border-none bg-transparent text-sm text-slate-600 outline-none"
+            className="w-full border-none bg-transparent text-sm text-bdt-soft outline-none"
           />
         </div>
         <Button className="gap-2" onClick={() => setShowCreate((value) => !value)}>
@@ -179,10 +179,10 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
       ) : null}
 
       {showCreate ? (
-        <div className="mx-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 text-sm">
+        <div className="mx-6 rounded-lg border border-bdt-royal-soft bg-bdt-panel px-4 py-4 text-sm">
           <form className="space-y-4" onSubmit={handleCreate}>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-slate-600">
+              <label className="flex flex-col gap-1 text-bdt-navy">
                 Display name
                 <Input
                   required
@@ -193,7 +193,7 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
                   placeholder="Alex Golfer"
                 />
               </label>
-              <label className="flex flex-col gap-1 text-slate-600">
+              <label className="flex flex-col gap-1 text-bdt-navy">
                 Email
                 <Input
                   required
@@ -203,7 +203,7 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
                   placeholder="alex@example.com"
                 />
               </label>
-              <label className="flex flex-col gap-1 text-slate-600">
+              <label className="flex flex-col gap-1 text-bdt-navy">
                 Username
                 <Input
                   required
@@ -214,14 +214,14 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
                   placeholder="alex"
                 />
               </label>
-              <label className="flex flex-col gap-1 text-slate-600">
+              <label className="flex flex-col gap-1 text-bdt-navy">
                 Team (optional)
                 <select
                   value={formValues.teamId}
                   onChange={(event) =>
                     setFormValues((prev) => ({ ...prev, teamId: event.target.value }))
                   }
-                  className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                  className="rounded-md border border-bdt-royal-soft bg-white px-3 py-2 text-sm shadow-sm focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)]"
                 >
                   <option value="">Unassigned</option>
                   {teams.map((team) => (
@@ -233,7 +233,7 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
               </label>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="flex flex-col gap-1 text-slate-600">
+              <label className="flex flex-col gap-1 text-bdt-navy">
                 Role
                 <select
                   value={formValues.role}
@@ -243,7 +243,7 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
                       role: event.target.value as "player" | "commissioner",
                     }))
                   }
-                  className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                  className="rounded-md border border-bdt-royal-soft bg-white px-3 py-2 text-sm shadow-sm focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)]"
                 >
                   <option value="player">Player</option>
                   <option value="commissioner">Commissioner</option>
@@ -276,8 +276,8 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
       ) : null}
 
       <div className="overflow-x-auto px-6 py-4">
-        <table className="min-w-full divide-y divide-slate-200 text-sm">
-          <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <table className="min-w-full divide-y divide-[rgb(var(--bdt-royal) / 0.12)] text-sm">
+          <thead className="bg-bdt-panel text-left text-xs font-semibold uppercase tracking-wide text-bdt-muted">
             <tr>
               <th className="px-4 py-3">Username</th>
               <th className="px-4 py-3">Email</th>
@@ -287,12 +287,12 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200">
+          <tbody className="divide-y divide-[rgb(var(--bdt-royal) / 0.12)]">
             {filtered.map((invite) => {
               const isConsumed = Boolean(invite.consumedAt);
               return (
-                <tr key={invite.id} className="text-slate-600">
-                  <td className="px-4 py-3 font-medium text-slate-900">{invite.username}</td>
+                <tr key={invite.id} className="text-bdt-soft">
+                  <td className="px-4 py-3 font-medium text-bdt-navy">{invite.username}</td>
                   <td className="px-4 py-3">{invite.email ?? "-"}</td>
                   <td className="px-4 py-3 font-mono text-xs uppercase">{invite.code}</td>
                   <td className="px-4 py-3">
@@ -337,7 +337,7 @@ export function InvitesClientView({ invites, teams }: InvitesClientViewProps) {
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-sm text-slate-500">
+                <td colSpan={6} className="px-4 py-6 text-center text-sm text-bdt-soft">
                   No invites found. Issue one to get players onboarded.
                 </td>
               </tr>
