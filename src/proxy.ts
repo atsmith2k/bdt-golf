@@ -1,5 +1,4 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 function getSupabaseEnv() {
@@ -11,7 +10,7 @@ function getSupabaseEnv() {
   return { url, key };
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const env = getSupabaseEnv();
   if (!env) {
     return NextResponse.next();

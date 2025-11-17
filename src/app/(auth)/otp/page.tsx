@@ -7,17 +7,21 @@ import { KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { normalizeIdentifierForAuth } from "@/lib/auth/normalize";
 
 export default function RedeemOtpPage() {
   const router = useRouter();
   const supabase = getSupabaseClient();
 
-  const [username, setUsername] = useState("");
+  // Accept either username or email as identifier
+  const [identifier, setIdentifier] = useState("");
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Normalization is centralized in src/lib/auth/normalize.ts
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -26,14 +30,16 @@ export default function RedeemOtpPage() {
     setLoading(true);
 
     try {
-      const cleanedUsername = username.trim();
-      const cleanedOtp = otp.trim();
+      const cleanedIdentifier = normalizeIdentifierForAuth(identifier);
+      const cleanedOtp = otp.trim().toUpperCase();
+      const cleanedPassword = password.trim();
 
+      // Pass identifier as "identifier" (could be username or email)
       const { data, error: invokeError } = await supabase.functions.invoke("redeem-otp", {
         body: {
-          username: cleanedUsername,
+          identifier: cleanedIdentifier,
           otp: cleanedOtp,
-          password,
+          password: cleanedPassword,
         },
       });
 
@@ -72,11 +78,13 @@ export default function RedeemOtpPage() {
       </CardHeader>
       <CardContent className="space-y-6">
         <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
-          Username
+          Email or username
           <input
-            value={username}
-            onChange={(event) => setUsername(event.target.value.toLowerCase())}
+            value={identifier}
+            onChange={(event) => setIdentifier(event.target.value)}
             className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+            placeholder="email or username"
+            autoComplete="username"
             required
           />
         </label>

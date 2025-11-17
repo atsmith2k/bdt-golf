@@ -10,6 +10,8 @@ import type { NavItem, UserProfile } from "@/lib/types";
 import { cn, formatRecord } from "@/lib/utils";
 import { Avatar } from "../ui/avatar";
 import { Button } from "../ui/button";
+import { ConfirmModal } from "../ui/confirm-modal";
+import { logout } from "@/lib/auth/logout";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -72,12 +74,19 @@ function NavLinks({
 export function AppShell({ children, user, activeTeamRecord, activeSeasonName }: AppShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  
   const commissionerLinks = useMemo(() => {
     if (user.role !== "commissioner") {
       return [];
     }
     return COMMISSIONER_ROUTES;
   }, [user.role]);
+
+  const handleLogout = async () => {
+    setShowLogoutConfirm(false);
+    await logout();
+  };
 
   const body = (
     <div className="flex flex-1 flex-col">
@@ -104,6 +113,7 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
             variant="ghost"
             size="sm"
             className="gap-2 text-bdt-royal hover:text-bdt-navy"
+            onClick={() => setShowLogoutConfirm(true)}
           >
             <LogOut className="h-4 w-4" />
             Sign out
@@ -116,6 +126,16 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
 
   return (
     <div className="flex min-h-screen">
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogout}
+        title="Sign out"
+        description="Are you sure you want to sign out? You'll need to log in again to access your account."
+        confirmText="Sign out"
+        cancelText="Cancel"
+        variant="danger"
+      />
       <aside className="hidden w-72 flex-col bg-bdt-navy-gradient px-6 py-8 text-white shadow-xl lg:flex">
         <Link
           href="/app"
@@ -280,6 +300,10 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
                     variant="ghost"
                     size="sm"
                     className="gap-2 rounded-full bg-white/80 px-4 text-bdt-red hover:bg-white"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      setShowLogoutConfirm(true);
+                    }}
                   >
                     <LogOut className="h-4 w-4" />
                     Sign out

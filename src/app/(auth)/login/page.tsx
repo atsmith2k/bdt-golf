@@ -7,6 +7,7 @@ import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { normalizeIdentifierForAuth } from "@/lib/auth/normalize";
 
 function looksLikeEmail(value: string) {
   return /\S+@\S+\.\S+/.test(value);
@@ -33,10 +34,10 @@ export default function LoginPage() {
       .maybeSingle();
 
     if (error) {
-      throw new Error("Unable to look up username. Contact the commissioner if this persists.", error);
+      throw new Error("Unable to look up username. Contact the commissioner if this persists.");
     }
-    if (!data?.email) {
-      throw new Error("Username found, but no email is linked to the account yet.");
+    if (!data || !data.email) {
+      throw new Error("No email linked to the account. Please check your username.");
     }
     return data.email;
   }
@@ -47,7 +48,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const cleanedIdentifier = identifier.trim();
+      const cleanedIdentifier = normalizeIdentifierForAuth(identifier);
       const emailForLogin = await resolveEmail(cleanedIdentifier);
 
       const { error: signInError } = await supabase.auth.signInWithPassword({

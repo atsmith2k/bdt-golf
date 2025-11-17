@@ -355,6 +355,13 @@ for select
 to authenticated
 using (auth.uid() is not null);
 
+drop policy if exists users_select_anon_login on public.users;
+create policy users_select_anon_login
+on public.users
+for select
+to anon
+using (true);
+
 drop policy if exists users_write_authenticated on public.users;
 create policy users_write_authenticated
 on public.users
