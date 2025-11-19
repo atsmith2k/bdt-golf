@@ -8,8 +8,8 @@ export default async function TeamDetailPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { seasonId?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ seasonId?: string }>;
 }) {
   const league = await getLeagueConfig();
   if (!league.activeSeasonId) {
@@ -22,12 +22,15 @@ export default async function TeamDetailPage({
     isActive: season.id === league.activeSeasonId,
   }));
 
-  const defaultSeasonId = searchParams.seasonId ?? league.activeSeasonId;
+  const resolvedSearchParams = await searchParams;
+  const defaultSeasonId = resolvedSearchParams.seasonId ?? league.activeSeasonId;
   if (!seasons.some((season) => season.id === defaultSeasonId)) {
     notFound();
   }
 
+  const resolvedParams = await params;
+
   return (
-    <TeamDetailClient teamId={params.id} seasons={seasons} defaultSeasonId={defaultSeasonId} />
+    <TeamDetailClient teamId={resolvedParams.id} seasons={seasons} defaultSeasonId={defaultSeasonId} />
   );
 }

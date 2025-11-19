@@ -345,18 +345,18 @@ export function AnalyticsClient({
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Analytics</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-bdt-navy">Analytics</h1>
+          <p className="text-sm text-bdt-soft">
             Insights across players and teams. Filters update results without leaving the page.
           </p>
         </div>
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-          <label className="flex items-center gap-2 text-sm text-slate-600">
+          <label className="flex items-center gap-2 text-sm text-bdt-muted">
             Season
             <select
               value={seasonId}
               onChange={(event) => setSeasonId(event.target.value)}
-              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+              className="rounded-lg border border-bdt-royal-soft bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
             >
               {seasons.map((season) => (
                 <option key={season.id} value={season.id}>
@@ -367,17 +367,17 @@ export function AnalyticsClient({
             </select>
           </label>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">Phase 4</Badge>
+            <Badge variant="outline" className="uppercase tracking-wide text-bdt-royal border-bdt-royal-soft">Phase 4</Badge>
             {isCommissioner ? (
               <button
                 type="button"
                 onClick={() => setHeadToHeadEnabled((value) => !value)}
                 aria-pressed={headToHeadEnabled}
                 className={cn(
-                  "inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium transition",
+                  "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition",
                   headToHeadEnabled
-                    ? "border-slate-900 bg-slate-900 text-white shadow-sm"
-                    : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900",
+                    ? "border-bdt-royal bg-bdt-royal text-white shadow-[0_4px_12px_rgb(var(--bdt-royal) / 0.3)]"
+                    : "border-bdt-royal-soft bg-white/95 text-bdt-royal hover:border-bdt-royal hover:bg-[rgb(var(--bdt-royal) / 0.05)]",
                 )}
               >
                 Head-to-head
@@ -387,7 +387,7 @@ export function AnalyticsClient({
                 <span
                   className={cn(
                     "h-2 w-2 rounded-full",
-                    headToHeadEnabled ? "bg-emerald-400" : "bg-slate-300",
+                    headToHeadEnabled ? "bg-emerald-400" : "bg-bdt-veil",
                   )}
                   aria-hidden="true"
                 />
@@ -404,10 +404,10 @@ export function AnalyticsClient({
             type="button"
             onClick={() => setActiveTab(value)}
             className={cn(
-              "rounded-full border px-4 py-2 text-sm transition",
+              "rounded-full border px-4 py-2 text-sm font-medium transition",
               activeTab === value
-                ? "border-slate-900 bg-slate-900 text-white shadow-sm"
-                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900",
+                ? "border-bdt-royal bg-bdt-royal text-white shadow-[0_4px_12px_rgb(var(--bdt-royal) / 0.3)]"
+                : "border-bdt-royal-soft bg-white/95 text-bdt-royal hover:border-bdt-royal hover:bg-[rgb(var(--bdt-royal) / 0.05)]",
             )}
           >
             {label}
@@ -510,25 +510,25 @@ function PlayersTab({
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <CardTitle>Player leaderboard</CardTitle>
-          <p className="text-sm text-slate-500">Sorted by total points. Tweak filters to focus on specific squads.</p>
+          <p className="text-sm text-bdt-soft">Sorted by total points. Tweak filters to focus on specific squads.</p>
         </div>
         <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-          <label className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
+          <label className="flex items-center gap-2 text-xs uppercase tracking-wide text-bdt-soft">
             Min matches
             <input
               type="number"
               min={0}
               value={minMatches}
               onChange={(event) => onMinMatchesChange(Math.max(0, Number(event.target.value)))}
-              className="w-20 rounded-md border border-slate-300 px-2 py-1 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+              className="w-20 rounded-lg border border-bdt-royal-soft px-2 py-1 text-sm shadow-[0_4px_12px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
             />
           </label>
-          <label className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
+          <label className="flex items-center gap-2 text-xs uppercase tracking-wide text-bdt-soft">
             Team
             <select
               value={teamId ?? ""}
               onChange={(event) => onTeamChange(event.target.value ? event.target.value : null)}
-              className="rounded-md border border-slate-300 px-2 py-1 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+              className="rounded-lg border border-bdt-royal-soft px-2 py-1 text-sm shadow-[0_4px_12px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
             >
               <option value="">All teams</option>
               {teams.map((team) => (
@@ -552,54 +552,54 @@ function PlayersTab({
           <EmptyState message="No player analytics available yet. Record matches to populate the leaderboard." />
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 text-sm">
+            <table className="min-w-full divide-y divide-bdt-royal-soft text-sm">
               <thead>
-                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  <th className="py-2 pr-4">Rank</th>
-                  <th className="py-2 pr-4">Player</th>
-                  <th className="py-2 pr-4">Team</th>
-                  <th className="py-2 pr-4 text-right">Matches</th>
-                  <th className="py-2 pr-4 text-right">Points</th>
-                  <th className="py-2 pr-4 text-right">Pts / Match</th>
-                  <th className="py-2 pr-4 text-right">Record</th>
-                  <th className="py-2">Recent form</th>
+                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-bdt-soft bg-[rgb(var(--bdt-royal) / 0.02)]">
+                  <th className="py-3 pr-4 px-2">Rank</th>
+                  <th className="py-3 pr-4 px-2">Player</th>
+                  <th className="py-3 pr-4 px-2">Team</th>
+                  <th className="py-3 pr-4 px-2 text-right">Matches</th>
+                  <th className="py-3 pr-4 px-2 text-right">Points</th>
+                  <th className="py-3 pr-4 px-2 text-right">Pts / Match</th>
+                  <th className="py-3 pr-4 px-2 text-right">Record</th>
+                  <th className="py-3 px-2 text-right">Recent form</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-bdt-royal-soft">
                 {data.players.map((player, index) => (
-                  <tr key={player.playerId} className="hover:bg-slate-50">
-                    <td className="py-3 pr-4 text-xs font-semibold text-slate-500">{index + 1}</td>
-                    <td className="py-3 pr-4">
+                  <tr key={player.playerId} className="hover:bg-[rgb(var(--bdt-royal) / 0.03)] transition">
+                    <td className="py-3 pr-4 px-2 text-xs font-semibold text-bdt-soft">{index + 1}</td>
+                    <td className="py-3 pr-4 px-2">
                       <div className="flex flex-col">
-                        <span className="font-semibold text-slate-900">{player.displayName}</span>
-                        <span className="text-xs text-slate-400">@{player.username}</span>
+                        <span className="font-semibold text-bdt-navy">{player.displayName}</span>
+                        <span className="text-xs text-bdt-soft">@{player.username}</span>
                       </div>
                     </td>
-                    <td className="py-3 pr-4 text-xs text-slate-500">
-                      {player.teamName ? player.teamName : <span className="italic text-slate-400">Unassigned</span>}
+                    <td className="py-3 pr-4 px-2 text-xs text-bdt-soft">
+                      {player.teamName ? player.teamName : <span className="italic text-bdt-muted">Unassigned</span>}
                     </td>
-                    <td className="py-3 pr-4 text-right font-semibold text-slate-900">{player.matchesPlayed}</td>
-                    <td className="py-3 pr-4 text-right font-semibold text-slate-900">
+                    <td className="py-3 pr-4 px-2 text-right font-semibold text-bdt-navy">{player.matchesPlayed}</td>
+                    <td className="py-3 pr-4 px-2 text-right font-semibold text-bdt-navy">
                       {player.pointsTotal.toFixed(2)}
                     </td>
-                    <td className="py-3 pr-4 text-right text-slate-600">{player.pointsPerMatch.toFixed(2)}</td>
-                    <td className="py-3 pr-4 text-right text-slate-600">
+                    <td className="py-3 pr-4 px-2 text-right text-bdt-soft">{player.pointsPerMatch.toFixed(2)}</td>
+                    <td className="py-3 pr-4 px-2 text-right text-bdt-soft">
                       {player.wins}-{player.losses}
                       {player.ties ? `-${player.ties}` : ""}
                     </td>
-                    <td className="py-3 text-right text-xs text-slate-500">
+                    <td className="py-3 px-2 text-right text-xs">
                       {player.recentForm.length > 0 ? (
                         <div className="flex justify-end gap-1">
                           {player.recentForm.map((value, formIndex) => (
                             <span
                               key={`${player.playerId}-form-${formIndex}`}
                               className={cn(
-                                "inline-flex h-7 w-7 items-center justify-center rounded border text-xs font-semibold",
+                                "inline-flex h-7 w-7 items-center justify-center rounded-lg border text-xs font-semibold",
                                 value > 0
-                                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                  ? "border-green-200 bg-green-50 text-green-700"
                                   : value < 0
-                                    ? "border-rose-200 bg-rose-50 text-rose-600"
-                                    : "border-slate-200 bg-slate-50 text-slate-500",
+                                    ? "border-orange-200 bg-orange-50 text-orange-600"
+                                    : "border-bdt-royal-soft bg-[rgb(var(--bdt-royal) / 0.03)] text-bdt-soft",
                               )}
                             >
                               {value.toFixed(1)}
@@ -607,7 +607,7 @@ function PlayersTab({
                           ))}
                         </div>
                       ) : (
-                        <span className="italic text-slate-400">No data</span>
+                        <span className="italic text-bdt-soft">No data</span>
                       )}
                     </td>
                   </tr>
@@ -647,7 +647,7 @@ function TeamsTab({ loading, error, data }: TeamsTabProps) {
     <Card>
       <CardHeader>
         <CardTitle>Team leaderboard</CardTitle>
-        <p className="text-sm text-slate-500">Summaries for each squad across the season.</p>
+        <p className="text-sm text-bdt-soft">Summaries for each squad across the season.</p>
       </CardHeader>
       <CardContent>
         {error ? (
@@ -659,7 +659,7 @@ function TeamsTab({ loading, error, data }: TeamsTabProps) {
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
             {data.teams.map((team, index) => (
-              <div key={team.teamId} className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+              <div key={team.teamId} className="rounded-2xl border border-bdt-royal-soft bg-white p-4 shadow-[0_12px_22px_rgb(var(--bdt-navy) / 0.12)]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div
@@ -667,8 +667,8 @@ function TeamsTab({ loading, error, data }: TeamsTabProps) {
                       style={{ backgroundColor: team.color ?? "#0f172a" }}
                     />
                     <div>
-                      <p className="font-semibold text-slate-900">{team.name}</p>
-                      <p className="text-xs text-slate-500">
+                      <p className="font-semibold text-bdt-navy">{team.name}</p>
+                      <p className="text-xs text-bdt-soft">
                         {team.wins}-{team.losses}
                         {team.ties ? `-${team.ties}` : ""} · {team.pointsTotal.toFixed(2)} pts
                       </p>
@@ -676,7 +676,7 @@ function TeamsTab({ loading, error, data }: TeamsTabProps) {
                   </div>
                   <Badge variant="outline">#{index + 1}</Badge>
                 </div>
-                <div className="mt-4 grid gap-3 text-xs text-slate-500 sm:grid-cols-3">
+                <div className="mt-4 grid gap-3 text-xs text-bdt-soft sm:grid-cols-3">
                   <Metric label="Matches" value={team.matchesPlayed} />
                   <Metric label="Points / match" value={team.pointsPerMatch.toFixed(2)} />
                   <Metric
@@ -735,7 +735,7 @@ function HeadToHeadTab({
     <Card>
       <CardHeader>
         <CardTitle>Head-to-head</CardTitle>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-bdt-soft">
           Compare two players across recorded matches. This module is in beta while we validate the aggregation logic.
         </p>
       </CardHeader>
@@ -747,12 +747,12 @@ function HeadToHeadTab({
         ) : (
           <>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-              <label className="flex flex-col text-sm text-slate-600">
+              <label className="flex flex-col text-sm text-bdt-soft">
                 Player A
                 <select
                   value={playerId ?? ""}
                   onChange={(event) => onSelectPlayer(event.target.value)}
-                  className="mt-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                  className="mt-1 rounded-lg border border-bdt-royal-soft bg-white px-3 py-2 text-sm shadow-sm focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)]"
                 >
                   <option value="" disabled>
                     Select player
@@ -765,12 +765,12 @@ function HeadToHeadTab({
                   ))}
                 </select>
               </label>
-              <label className="flex flex-col text-sm text-slate-600">
+              <label className="flex flex-col text-sm text-bdt-soft">
                 Player B
                 <select
                   value={opponentId ?? ""}
                   onChange={(event) => onSelectOpponent(event.target.value)}
-                  className="mt-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                  className="mt-1 rounded-lg border border-bdt-royal-soft bg-white px-3 py-2 text-sm shadow-sm focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)]"
                 >
                   <option value="" disabled>
                     Select opponent
@@ -826,44 +826,44 @@ function HeadToHeadTab({
                 </div>
 
                 <div className="space-y-3">
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-bdt-soft">
                     Showing recorded results for{" "}
-                    <span className="font-semibold text-slate-900">{selectedPlayer?.label ?? data?.player.displayName}</span>{" "}
+                    <span className="font-semibold text-bdt-navy">{selectedPlayer?.label ?? data?.player.displayName}</span>{" "}
                     vs{" "}
-                    <span className="font-semibold text-slate-900">
+                    <span className="font-semibold text-bdt-navy">
                       {selectedOpponent?.label ?? data?.opponent.displayName}
                     </span>
                     .
                   </p>
                   <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-slate-200 text-sm">
+                    <table className="min-w-full divide-y divide-bdt-royal-soft text-sm">
                       <thead>
-                        <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        <tr className="text-left text-xs font-semibold uppercase tracking-wide text-bdt-soft">
                           <th className="py-2 pr-4">Date</th>
                           <th className="py-2 pr-4">Course</th>
                           <th className="py-2 pr-4 text-right">Score</th>
                           <th className="py-2 text-right">Result</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-bdt-veil">
                         {matches.map((match) => (
-                          <tr key={match.id} className="hover:bg-slate-50">
-                            <td className="py-3 pr-4 text-slate-600">
+                          <tr key={match.id} className="hover:bg-[rgb(var(--bdt-royal) / 0.03)] transition">
+                            <td className="py-3 pr-4 text-bdt-soft">
                               {new Date(match.matchDate).toLocaleDateString()}
                             </td>
-                            <td className="py-3 pr-4 text-slate-500">{match.course ?? "—"}</td>
-                            <td className="py-3 pr-4 text-right font-semibold text-slate-900">
+                            <td className="py-3 pr-4 text-bdt-soft">{match.course ?? "—"}</td>
+                            <td className="py-3 pr-4 text-right font-semibold text-bdt-navy">
                               {match.playerPoints.toFixed(1)} — {match.opponentPoints.toFixed(1)}
                             </td>
                             <td className="py-3 text-right">
                               <span
                                 className={cn(
-                                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold",
+                                  "inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-xs font-semibold",
                                   match.result === "win"
-                                    ? "bg-emerald-100 text-emerald-700"
+                                    ? "border-green-200 bg-green-50 text-green-700"
                                     : match.result === "loss"
-                                      ? "bg-rose-100 text-rose-700"
-                                      : "bg-slate-100 text-slate-600",
+                                      ? "border-orange-200 bg-orange-50 text-orange-600"
+                                      : "border-bdt-royal-soft bg-[rgb(var(--bdt-royal) / 0.03)] text-bdt-soft",
                                 )}
                               >
                                 {match.result === "win" ? "Win" : match.result === "loss" ? "Loss" : "Tie"}
@@ -909,7 +909,7 @@ function ParticipationTab({ loading, error, data }: ParticipationTabProps) {
     <Card>
       <CardHeader>
         <CardTitle>Participation</CardTitle>
-        <p className="text-sm text-slate-500">Identify players who might need a nudge to join the next round.</p>
+        <p className="text-sm text-bdt-soft">Identify players who might need a nudge to join the next round.</p>
       </CardHeader>
       <CardContent>
         {error ? (
@@ -920,14 +920,14 @@ function ParticipationTab({ loading, error, data }: ParticipationTabProps) {
           <EmptyState message="No participation data yet. Record matches to unlock trends." />
         ) : (
           <div className="space-y-3 text-sm">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-bdt-soft">
               Total matches logged this season:{" "}
-              <span className="font-semibold text-slate-900">{data.totalMatches}</span>
+              <span className="font-semibold text-bdt-navy">{data.totalMatches}</span>
             </p>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
+              <table className="min-w-full divide-y divide-bdt-royal-soft text-sm">
                 <thead>
-                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-bdt-soft">
                     <th className="py-2 pr-4">Player</th>
                     <th className="py-2 pr-4">Team</th>
                     <th className="py-2 pr-4 text-right">Matches</th>
@@ -935,23 +935,23 @@ function ParticipationTab({ loading, error, data }: ParticipationTabProps) {
                     <th className="py-2 text-right">Points</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-bdt-veil">
                   {data.players.map((player) => (
-                    <tr key={player.playerId} className="hover:bg-slate-50">
+                    <tr key={player.playerId} className="hover:bg-[rgb(var(--bdt-royal) / 0.03)] transition">
                       <td className="py-3 pr-4">
                         <div className="flex flex-col">
-                          <span className="font-semibold text-slate-900">{player.displayName}</span>
-                          <span className="text-xs text-slate-400">@{player.username}</span>
+                          <span className="font-semibold text-bdt-navy">{player.displayName}</span>
+                          <span className="text-xs text-bdt-soft">@{player.username}</span>
                         </div>
                       </td>
-                      <td className="py-3 pr-4 text-xs text-slate-500">
-                        {player.teamName ?? <span className="italic text-slate-400">Unassigned</span>}
+                      <td className="py-3 pr-4 text-xs text-bdt-soft">
+                        {player.teamName ?? <span className="italic text-bdt-muted">Unassigned</span>}
                       </td>
-                      <td className="py-3 pr-4 text-right font-semibold text-slate-900">{player.matchesPlayed}</td>
-                      <td className="py-3 pr-4 text-right text-slate-600">
+                      <td className="py-3 pr-4 text-right font-semibold text-bdt-navy">{player.matchesPlayed}</td>
+                      <td className="py-3 pr-4 text-right text-bdt-soft">
                         {(player.participationRate * 100).toFixed(1)}%
                       </td>
-                      <td className="py-3 text-right text-slate-600">{player.totalPoints.toFixed(2)}</td>
+                      <td className="py-3 text-right text-bdt-soft">{player.totalPoints.toFixed(2)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -968,25 +968,25 @@ function LoadingRows({ count }: { count: number }) {
   return (
     <div className="space-y-3">
       {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className="h-12 animate-pulse rounded-md bg-slate-100" />
+        <div key={index} className="h-12 animate-pulse rounded-md bg-[rgb(var(--bdt-royal) / 0.1)]" />
       ))}
     </div>
   );
 }
 
 function EmptyState({ message }: { message: string }) {
-  return <p className="py-6 text-sm text-slate-500">{message}</p>;
+  return <p className="py-6 text-sm text-bdt-soft">{message}</p>;
 }
 
 function ErrorState({ message }: { message: string }) {
-  return <p className="py-6 text-sm text-red-600">{message}</p>;
+  return <p className="py-6 text-sm text-bdt-red">{message}</p>;
 }
 
 function Metric({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 rounded-lg border border-slate-200 bg-slate-50 p-3">
-      <span className="text-xs uppercase tracking-wide text-slate-500">{label}</span>
-      <span className="text-sm font-semibold text-slate-900">{value}</span>
+    <div className="flex flex-col gap-1 rounded-lg border border-bdt-royal-soft bg-[rgb(var(--bdt-royal) / 0.03)] p-3">
+      <span className="text-xs uppercase tracking-wide text-bdt-soft">{label}</span>
+      <span className="text-sm font-semibold text-bdt-navy">{value}</span>
     </div>
   );
 }

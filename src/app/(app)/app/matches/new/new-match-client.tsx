@@ -212,23 +212,23 @@ export function NewMatchClient({
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-6 sm:grid-cols-2">
-            <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+            <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
               Date played
               <input
                 type="date"
                 value={playedOn}
                 onChange={(event) => setPlayedOn(event.target.value)}
-                className="rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                className="rounded-lg border border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
                 max={new Date().toISOString().slice(0, 10)}
                 required
               />
             </label>
-            <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+            <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
               Match format
               <select
                 value={format}
                 onChange={(event) => setFormat(event.target.value as MatchFormat)}
-                className="rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+                className="rounded-lg border border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
               >
                 {MATCH_FORMATS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -238,23 +238,23 @@ export function NewMatchClient({
               </select>
             </label>
           </div>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+          <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
             Course (optional)
             <input
               type="text"
               value={course}
               onChange={(event) => setCourse(event.target.value)}
               placeholder="Course name"
-              className="rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+              className="rounded-lg border border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
             />
           </label>
-          <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
+          <label className="flex flex-col gap-2 text-sm font-medium text-bdt-navy">
             Notes
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               rows={4}
-              className="rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+              className="rounded-lg border border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
               placeholder="Document handicaps, format tweaks, or weather if needed."
             />
           </label>
@@ -265,7 +265,7 @@ export function NewMatchClient({
         <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle>Participants</CardTitle>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-bdt-soft">
               Select the players who competed. Team splits help build stats.
             </p>
           </div>
@@ -273,7 +273,7 @@ export function NewMatchClient({
         </CardHeader>
         <CardContent className="space-y-6">
           {playersByTeam.length === 0 && (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-bdt-soft">
               No teams are assigned to this season yet. Create teams and assign players before logging matches.
             </p>
           )}
@@ -282,9 +282,9 @@ export function NewMatchClient({
               <div className="flex items-center gap-3">
                 <div
                   className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: team.color ?? "#1f2937" }}
+                  style={{ backgroundColor: team.color ?? "#0c337a" }}
                 />
-                <h3 className="text-sm font-semibold text-slate-900">{team.name}</h3>
+                <h3 className="text-sm font-semibold text-bdt-navy">{team.name}</h3>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 {members.map((player) => {
@@ -294,23 +294,23 @@ export function NewMatchClient({
                       key={player.id}
                       type="button"
                       onClick={() => handlePlayerToggle(player)}
-                      className={`flex items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition hover:border-slate-300 ${
+                      className={`flex items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition ${
                         checked
-                          ? "border-slate-900 bg-slate-900 text-white"
-                          : "border-slate-200 bg-white text-slate-700"
+                          ? "border-bdt-royal bg-bdt-royal text-white"
+                          : "border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95 text-bdt-navy hover:border-[rgb(var(--bdt-royal) / 0.35)]"
                       }`}
                     >
                       <span>{player.fullName}</span>
                       {checked ? (
                         <span className="text-xs font-semibold uppercase">In</span>
                       ) : (
-                        <span className="text-xs text-slate-400">Tap</span>
+                        <span className="text-xs text-bdt-soft">Tap</span>
                       )}
                     </button>
                   );
                 })}
                 {members.length === 0 && (
-                  <p className="text-xs text-slate-400">No players assigned to this team.</p>
+                  <p className="text-xs text-bdt-soft">No players assigned to this team.</p>
                 )}
               </div>
             </div>
@@ -318,8 +318,8 @@ export function NewMatchClient({
           {unassignedPlayers.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-slate-400" />
-                <h3 className="text-sm font-semibold text-slate-900">Unassigned</h3>
+                <div className="h-2 w-2 rounded-full bg-bdt-soft" />
+                <h3 className="text-sm font-semibold text-bdt-navy">Unassigned</h3>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 {unassignedPlayers.map((player) => {
@@ -329,17 +329,17 @@ export function NewMatchClient({
                       key={player.id}
                       type="button"
                       onClick={() => handlePlayerToggle(player)}
-                      className={`flex items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition hover:border-slate-300 ${
+                      className={`flex items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition ${
                         checked
-                          ? "border-slate-900 bg-slate-900 text-white"
-                          : "border-slate-200 bg-white text-slate-700"
+                          ? "border-bdt-royal bg-bdt-royal text-white"
+                          : "border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95 text-bdt-navy hover:border-[rgb(var(--bdt-royal) / 0.35)]"
                       }`}
                     >
                       <span>{player.fullName}</span>
                       {checked ? (
                         <span className="text-xs font-semibold uppercase">In</span>
                       ) : (
-                        <span className="text-xs text-slate-400">Tap</span>
+                        <span className="text-xs text-bdt-soft">Tap</span>
                       )}
                     </button>
                   );
@@ -356,7 +356,7 @@ export function NewMatchClient({
         </CardHeader>
         <CardContent className="space-y-4">
           {selectedDetails.length === 0 ? (
-            <p className="text-sm text-slate-500">Pick players above to assign points.</p>
+            <p className="text-sm text-bdt-soft">Pick players above to assign points.</p>
           ) : (
             <>
               <div className="space-y-3">
@@ -365,13 +365,13 @@ export function NewMatchClient({
                   return (
                     <div key={player.id} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-slate-900">{player.fullName}</span>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-sm font-medium text-bdt-navy">{player.fullName}</span>
+                        <span className="text-xs text-bdt-soft">
                           {player.teamId ? teamLookup.get(player.teamId)?.name ?? "Team not found" : "Unassigned team"}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <label className="text-xs uppercase tracking-wide text-slate-500" htmlFor={`points-${player.id}`}>
+                        <label className="text-xs uppercase tracking-wide text-bdt-soft" htmlFor={`points-${player.id}`}>
                           Points
                         </label>
                         <input
@@ -382,8 +382,8 @@ export function NewMatchClient({
                           inputMode="decimal"
                           value={playerPoints[player.id] ?? ""}
                           onChange={(event) => handlePointsChange(player.id, event.target.value)}
-                          className={`w-28 rounded-md border px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30 ${
-                            isInvalid ? "border-red-500 focus:border-red-500 focus:ring-red-200" : "border-slate-300"
+                          className={`w-28 rounded-lg border px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1 ${
+                            isInvalid ? "border-bdt-red focus:border-bdt-red focus:ring-[rgb(var(--bdt-red) / 0.35)]" : "border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95"
                           }`}
                           placeholder="0"
                           required
@@ -393,9 +393,9 @@ export function NewMatchClient({
                   );
                 })}
               </div>
-              <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+              <div className="flex items-center justify-between rounded-lg border border-[rgb(var(--bdt-royal) / 0.22)] bg-[rgb(var(--bdt-royal) / 0.05)] px-3 py-2 text-sm text-bdt-muted">
                 <span>Total points</span>
-                <span className="font-semibold text-slate-900">{totalPoints.toFixed(2)}</span>
+                <span className="font-semibold text-bdt-navy">{totalPoints.toFixed(2)}</span>
               </div>
             </>
           )}
@@ -407,14 +407,14 @@ export function NewMatchClient({
           <CardTitle>Review &amp; submit</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="text-sm text-slate-500">
+          <div className="text-sm text-bdt-soft">
             <p>
               {formatDate(playedOn)} -{" "}
               {MATCH_FORMATS.find((option) => option.value === format)?.label ?? "Custom match"}
             </p>
             <p>{selectedPlayers.length} players tagged</p>
             {missingPoints.length > 0 && selectedPlayers.length > 0 ? (
-              <p className="mt-1 text-xs text-red-600">Assign valid points to every player.</p>
+              <p className="mt-1 text-xs text-bdt-red">Assign valid points to every player.</p>
             ) : null}
           </div>
           <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">

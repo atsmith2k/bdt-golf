@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
-import { getAuditLogs, getLeagueConfig, getOtpInvites } from "@/lib/queries";
+import { getAuditLogs, getLeagueConfig, getOtpInvites, getUserProfile } from "@/lib/queries";
 import { SeasonManager } from "@/components/commissioner/season-manager";
 import { TeamManager } from "@/components/commissioner/team-manager";
 import { AnnouncementComposer } from "@/components/commissioner/announcement-composer";
@@ -22,6 +23,11 @@ function formatInviteStatus(consumedAt?: string) {
 }
 
 export default async function CommissionerPage() {
+  const viewer = await getUserProfile();
+  if (!viewer || viewer.role !== "commissioner") {
+    notFound();
+  }
+
   const [league, invites, auditLogs] = await Promise.all([
     getLeagueConfig(),
     getOtpInvites(),

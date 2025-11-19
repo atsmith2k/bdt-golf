@@ -48,16 +48,16 @@ export function PlayersClient({
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Players</h1>
-          <p className="text-sm text-slate-500">Roster of every league member with season statistics.</p>
+          <h1 className="text-2xl font-semibold text-bdt-navy">Players</h1>
+          <p className="text-sm text-bdt-soft">Roster of every league member with season statistics.</p>
         </div>
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-          <label className="flex items-center gap-2 text-sm text-slate-600">
+          <label className="flex items-center gap-2 text-sm text-bdt-muted">
             Season
             <select
               value={seasonId}
               onChange={(event) => setSeasonId(event.target.value)}
-              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+              className="rounded-lg border border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
             >
               {seasons.map((season) => (
                 <option key={season.id} value={season.id}>
@@ -75,7 +75,7 @@ export function PlayersClient({
 
       {error ? (
         <Card>
-          <CardContent className="space-y-3 py-6 text-sm text-red-600">
+          <CardContent className="space-y-3 py-6 text-sm text-bdt-red">
             <p>{error.message}</p>
             <Button onClick={() => mutate()} variant="outline" size="sm">
               Retry
@@ -85,21 +85,21 @@ export function PlayersClient({
       ) : null}
 
       {isLoading && !data ? (
-        <Card className="border-slate-200 shadow-none">
+        <Card className="border-bdt-veil shadow-none">
           <CardHeader>
-            <div className="h-5 w-32 animate-pulse rounded bg-slate-200" />
+            <div className="h-5 w-32 animate-pulse rounded bg-bdt-royal-soft" />
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="h-32 animate-pulse rounded-lg bg-slate-200" />
+                <div key={index} className="h-32 animate-pulse rounded-lg bg-bdt-royal-soft" />
               ))}
             </div>
           </CardContent>
         </Card>
       ) : players.length === 0 ? (
         <Card>
-          <CardContent className="py-6 text-sm text-slate-500">
+          <CardContent className="py-6 text-sm text-bdt-soft">
             No players recorded for this season yet.
           </CardContent>
         </Card>
@@ -113,13 +113,13 @@ export function PlayersClient({
               {players.map((player) => (
                 <div
                   key={player.id}
-                  className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-4 text-sm"
+                  className="flex flex-col gap-3 rounded-lg border border-[rgb(var(--bdt-royal) / 0.22)] bg-white/95 p-4 text-sm"
                 >
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{player.fullName}</p>
-                    <p className="text-xs text-slate-500">{player.team ? player.team.name : "Free Agent"}</p>
+                    <p className="text-sm font-semibold text-bdt-navy">{player.fullName}</p>
+                    <p className="text-xs text-bdt-soft">{player.team ? player.team.name : "Free Agent"}</p>
                   </div>
-                  <div className="flex gap-3 text-xs text-slate-500">
+                  <div className="flex gap-3 text-xs text-bdt-soft">
                     <span>
                       Matches <span className="font-semibold">{player.matchesPlayed}</span>
                     </span>
@@ -129,7 +129,7 @@ export function PlayersClient({
                   </div>
                   <Link
                     href={`/app/players/${player.id}?seasonId=${seasonId}`}
-                    className="inline-flex items-center gap-2 text-xs font-semibold text-slate-900"
+                    className="inline-flex items-center gap-2 text-xs font-semibold text-bdt-navy"
                   >
                     View player <ArrowUpRight className="h-3 w-3" />
                   </Link>

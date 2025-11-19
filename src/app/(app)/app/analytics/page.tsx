@@ -19,8 +19,8 @@ export default async function AnalyticsPage() {
     console.error("[analytics] seasons fetch error", seasonsError);
     return (
       <Card>
-        <CardContent className="space-y-3 py-8 text-sm text-red-600">
-          <h1 className="text-2xl font-semibold text-slate-900">Analytics</h1>
+        <CardContent className="space-y-3 py-8 text-sm text-bdt-red">
+          <h1 className="text-2xl font-semibold text-bdt-navy">Analytics</h1>
           <p>Unable to load seasons. Please try again or contact a commissioner.</p>
         </CardContent>
       </Card>
@@ -36,8 +36,8 @@ export default async function AnalyticsPage() {
   if (seasons.length === 0) {
     return (
       <Card>
-        <CardContent className="space-y-3 py-8 text-sm text-slate-600">
-          <h1 className="text-2xl font-semibold text-slate-900">Analytics</h1>
+        <CardContent className="space-y-3 py-8 text-sm text-bdt-soft">
+          <h1 className="text-2xl font-semibold text-bdt-navy">Analytics</h1>
           <p>No seasons have been created yet. Start by creating a season in the commissioner console.</p>
         </CardContent>
       </Card>

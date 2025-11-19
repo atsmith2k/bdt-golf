@@ -47,7 +47,7 @@ export function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgb(var(--bdt-navy) / 0.6)] backdrop-blur-sm px-4"
       onClick={handleBackdropClick}
     >
       <div className="relative w-full max-w-md rounded-2xl border border-bdt-royal-soft bg-white shadow-[0_24px_48px_rgb(var(--bdt-navy) / 0.2)] animate-in fade-in-0 zoom-in-95 duration-200">

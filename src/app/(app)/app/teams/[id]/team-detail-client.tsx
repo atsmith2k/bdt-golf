@@ -3,6 +3,7 @@
 import Link from "next/link";
 import * as React from "react";
 import useSWR from "swr";
+import { Mail, Phone, ArrowUpRight } from "lucide-react";
 import { formatDate, formatPoints, formatRecord } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,8 @@ async function fetchTeamDetail(url: string) {
       handicapIndex?: number;
       email?: string;
       phone?: string;
+      cumulativePoints: number;
+      status: "active" | "inactive" | "injured";
     }[];
     matches: {
       id: string;
@@ -90,28 +93,28 @@ export function TeamDetailClient({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <div
-            className="h-14 w-14 rounded-full border border-slate-200 bg-slate-50"
-            style={{ backgroundColor: data?.team.color ?? "#1f2937" }}
+            className="h-16 w-16 rounded-2xl border border-bdt-veil shadow-[0_12px_22px_rgb(var(--bdt-navy) / 0.12)]"
+            style={{ backgroundColor: data?.team.color ?? "#0f172a" }}
           />
           <div>
-            <h1 className="text-3xl font-semibold text-slate-900">
+            <h1 className="text-3xl font-semibold text-bdt-navy">
               {data?.team.name ?? "Loading team..."}
             </h1>
             {data?.stats ? (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-bdt-soft">
                 {formatRecord(data.stats.wins ?? 0, data.stats.losses ?? 0, data.stats.ties ?? 0)} ·{" "}
-                {formatPoints(data.stats.pointsTotal ?? 0)}
+                {formatPoints(data.stats.pointsTotal ?? 0)} points
               </p>
             ) : null}
           </div>
         </div>
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-          <label className="flex items-center gap-2 text-sm text-slate-600">
+          <label className="flex items-center gap-2 text-sm text-bdt-muted">
             Season
             <select
               value={seasonId}
               onChange={(event) => setSeasonId(event.target.value)}
-              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/30"
+              className="rounded-lg border border-bdt-royal-soft bg-white/95 px-3 py-2 text-sm text-bdt-navy shadow-[0_10px_22px_rgb(var(--bdt-navy) / 0.08)] focus:border-[rgb(var(--bdt-royal))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--bdt-royal) / 0.35)] focus:ring-offset-1"
             >
               {seasons.map((season) => (
                 <option key={season.id} value={season.id}>
@@ -121,13 +124,17 @@ export function TeamDetailClient({
               ))}
             </select>
           </label>
-          {data?.stats?.streak ? <Badge variant="success">Streak {data.stats.streak}</Badge> : null}
+          {data?.stats?.streak ? (
+            <Badge variant="outline" className="uppercase tracking-wide">
+              Streak {data.stats.streak}
+            </Badge>
+          ) : null}
         </div>
       </div>
 
       {error && !(error as Error & { status?: number })?.status ? (
         <Card>
-          <CardContent className="space-y-3 py-6 text-sm text-red-600">
+          <CardContent className="space-y-3 py-6 text-sm text-bdt-red">
             <p>{error.message}</p>
             <Button onClick={() => mutate()} size="sm" variant="outline">
               Retry
@@ -146,24 +153,75 @@ export function TeamDetailClient({
                 <CardTitle>Roster</CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="grid gap-3 sm:grid-cols-2">
+                <ul className="space-y-3">
                   {data.roster.map((player) => (
                     <li
                       key={player.id}
-                      className="rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm text-slate-700"
+                      className="flex flex-col gap-3 rounded-2xl border border-bdt-royal-soft bg-white/90 p-4 sm:flex-row sm:items-center sm:justify-between"
                     >
-                      <Link href={`/app/players/${player.id}`} className="font-semibold text-slate-900">
-                        {player.fullName}
+                      <Link 
+                        href={`/app/players/${player.id}`} 
+                        className="group flex-1"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold text-bdt-navy group-hover:text-bdt-royal transition">
+                              {player.fullName}
+                            </p>
+                            <div className="flex flex-col gap-1 mt-1">
+                              {player.handicapIndex !== undefined ? (
+                                <p className="text-xs text-bdt-soft">
+                                  Handicap: {player.handicapIndex.toFixed(1)}
+                                </p>
+                              ) : null}
+                              <p className="text-xs text-bdt-soft">
+                                {player.cumulativePoints} pts
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {player.status === "active" && (
+                              <Badge variant="outline" className="text-xs text-bdt-navy border-bdt-royal-soft bg-[rgb(var(--bdt-royal) / 0.03)]">
+                                Active
+                              </Badge>
+                            )}
+                            {player.status === "inactive" && (
+                              <Badge variant="outline" className="text-xs text-bdt-soft border-bdt-royal-soft">
+                                Inactive
+                              </Badge>
+                            )}
+                            {player.status === "injured" && (
+                              <Badge variant="outline" className="text-xs text-bdt-red border-[rgb(var(--bdt-red) / 0.18)] bg-[rgb(var(--bdt-red) / 0.06)]">
+                                Injured
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
                       </Link>
-                      {player.handicapIndex !== undefined ? (
-                        <p className="text-xs text-slate-500">
-                          Handicap index: {player.handicapIndex.toFixed(1)}
-                        </p>
-                      ) : null}
+                      <div className="flex gap-2 border-t border-bdt-royal-soft pt-3 sm:border-t-0 sm:border-l sm:pl-3 sm:pt-0">
+                        {player.email && (
+                          <a
+                            href={`mailto:${player.email}`}
+                            className="inline-flex items-center justify-center rounded-full border border-transparent p-2 text-bdt-royal transition hover:border-bdt-royal-soft hover:bg-bdt-panel"
+                            title={player.email}
+                          >
+                            <Mail className="h-4 w-4" />
+                          </a>
+                        )}
+                        {player.phone && (
+                          <a
+                            href={`tel:${player.phone}`}
+                            className="inline-flex items-center justify-center rounded-full border border-transparent p-2 text-bdt-royal transition hover:border-bdt-royal-soft hover:bg-bdt-panel"
+                            title={player.phone}
+                          >
+                            <Phone className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
                     </li>
                   ))}
                   {data.roster.length === 0 && (
-                    <li className="text-sm text-slate-500">No players assigned to this team yet.</li>
+                    <li className="text-sm text-bdt-soft py-4">No players assigned to this team yet.</li>
                   )}
                 </ul>
               </CardContent>
@@ -172,16 +230,16 @@ export function TeamDetailClient({
               <CardHeader>
                 <CardTitle>Season snapshot</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm text-slate-600">
+              <CardContent className="space-y-3 text-sm text-bdt-soft">
                 {data.stats ? (
                   <>
                     <p>
                       Matches played:{" "}
-                      <span className="font-semibold">{data.stats.matchesPlayed}</span>
+                      <span className="font-semibold text-bdt-navy">{data.stats.matchesPlayed}</span>
                     </p>
                     <p>
                       Points per match:{" "}
-                      <span className="font-semibold">
+                      <span className="font-semibold text-bdt-navy">
                         {data.stats.pointsPerMatch.toFixed(1)}
                       </span>
                     </p>
@@ -190,40 +248,42 @@ export function TeamDetailClient({
                   <p>No stats yet for this team.</p>
                 )}
                 <p>
-                  Season: <span className="font-semibold">{data.season.name}</span>
+                  Season: <span className="font-semibold text-bdt-navy">{data.season.name}</span>
                 </p>
-                <p>ID: {data.team.id}</p>
               </CardContent>
             </Card>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Matches</CardTitle>
+              <CardTitle>Recent matches</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-3 text-sm text-slate-600">
+              <ul className="space-y-3">
                 {data.matches.map((match) => (
-                  <li
-                    key={match.id}
-                    className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div>
-                      <p className="font-semibold text-slate-900">
-                        {match.courseName ?? "Friendly match"}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {formatDate(match.playedOn)} · {match.format.replace(/_/g, " ")}
-                      </p>
-                    </div>
-                    <div className="flex gap-4 text-xs text-slate-500">
-                      <span>{match.status}</span>
-                      <span>{formatPoints(match.totalPoints)}</span>
-                    </div>
+                  <li key={match.id}>
+                    <Link
+                      href={`/app/matches/${match.id}`}
+                      className="flex flex-col gap-2 rounded-2xl border border-bdt-royal-soft bg-white/90 p-4 transition hover:border-bdt-royal hover:bg-[rgb(var(--bdt-royal) / 0.03)] sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div>
+                        <p className="font-semibold text-bdt-navy">
+                          {match.courseName ?? "Friendly match"}
+                        </p>
+                        <p className="text-xs text-bdt-soft">
+                          {formatDate(match.playedOn)} · {match.format.replace(/_/g, " ")}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="text-bdt-soft">{match.status}</span>
+                        <span className="font-semibold text-bdt-navy">{formatPoints(match.totalPoints)}</span>
+                        <ArrowUpRight className="h-4 w-4 text-bdt-royal" />
+                      </div>
+                    </Link>
                   </li>
                 ))}
                 {data.matches.length === 0 && (
-                  <li className="text-sm text-slate-500">No matches logged for this team yet.</li>
+                  <li className="text-sm text-bdt-soft py-4">No matches logged for this team yet.</li>
                 )}
               </ul>
             </CardContent>
@@ -238,41 +298,41 @@ function TeamDetailSkeleton() {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4">
-        <div className="h-14 w-14 animate-pulse rounded-full bg-slate-200" />
+        <div className="h-16 w-16 animate-pulse rounded-2xl bg-[rgb(var(--bdt-royal) / 0.16)]" />
         <div className="space-y-2">
-          <div className="h-5 w-48 animate-pulse rounded bg-slate-200" />
-          <div className="h-4 w-32 animate-pulse rounded bg-slate-200" />
+          <div className="h-8 w-48 animate-pulse rounded bg-[rgb(var(--bdt-royal) / 0.16)]" />
+          <div className="h-4 w-32 animate-pulse rounded bg-[rgb(var(--bdt-royal) / 0.12)]" />
         </div>
       </div>
       <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
-        <Card className="border-slate-200 shadow-none">
+        <Card className="border-bdt-royal-soft bg-white/80 shadow-none backdrop-blur">
           <CardHeader>
-            <div className="h-5 w-28 animate-pulse rounded bg-slate-200" />
+            <div className="h-5 w-28 animate-pulse rounded bg-[rgb(var(--bdt-royal) / 0.16)]" />
           </CardHeader>
           <CardContent className="space-y-3">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="h-12 animate-pulse rounded bg-slate-200" />
+              <div key={index} className="h-24 animate-pulse rounded-2xl bg-[rgb(var(--bdt-royal) / 0.16)]" />
             ))}
           </CardContent>
         </Card>
-        <Card className="border-slate-200 shadow-none">
+        <Card className="border-bdt-royal-soft bg-white/80 shadow-none backdrop-blur">
           <CardHeader>
-            <div className="h-5 w-32 animate-pulse rounded bg-slate-200" />
+            <div className="h-5 w-32 animate-pulse rounded bg-[rgb(var(--bdt-royal) / 0.16)]" />
           </CardHeader>
           <CardContent className="space-y-3">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="h-8 animate-pulse rounded bg-slate-200" />
+              <div key={index} className="h-8 animate-pulse rounded bg-[rgb(var(--bdt-royal) / 0.12)]" />
             ))}
           </CardContent>
         </Card>
       </div>
-      <Card className="border-slate-200 shadow-none">
+      <Card className="border-bdt-royal-soft bg-white/80 shadow-none backdrop-blur">
         <CardHeader>
-          <div className="h-5 w-24 animate-pulse rounded bg-slate-200" />
+          <div className="h-5 w-32 animate-pulse rounded bg-[rgb(var(--bdt-royal) / 0.16)]" />
         </CardHeader>
         <CardContent className="space-y-3">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-16 animate-pulse rounded bg-slate-200" />
+            <div key={index} className="h-16 animate-pulse rounded-2xl bg-[rgb(var(--bdt-royal) / 0.16)]" />
           ))}
         </CardContent>
       </Card>

@@ -13,11 +13,11 @@ export default async function TeamsPage() {
         <CardHeader>
           <CardTitle>Teams</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm text-slate-600">
+        <CardContent className="space-y-3 text-sm text-bdt-soft">
           <p>No active season yet. Once you create one, teams for that season will be listed here.</p>
           <p>
             Use the{" "}
-            <Link href="/app/commissioner" className="font-semibold text-slate-900">
+            <Link href="/app/commissioner" className="font-semibold text-bdt-navy">
               commissioner console
             </Link>{" "}
             to create a season and add teams.

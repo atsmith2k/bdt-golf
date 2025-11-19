@@ -13,11 +13,11 @@ export default async function PlayersPage() {
         <CardHeader>
           <CardTitle>Players</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm text-slate-600">
+        <CardContent className="space-y-3 text-sm text-bdt-muted">
           <p>No active season yet. Once you create one, the roster will populate here.</p>
           <p>
             Use the{" "}
-            <Link href="/app/commissioner" className="font-semibold text-slate-900">
+            <Link href="/app/commissioner" className="font-semibold text-bdt-navy">
               commissioner console
             </Link>{" "}
             to create a season and invite players.

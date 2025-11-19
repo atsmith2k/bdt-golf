@@ -100,6 +100,7 @@ create table if not exists public.users (
   email text unique,
   avatar_url text,
   bio text,
+  ghin text,
   handicap numeric(6,2),
   phone text,
   role public.role_type not null default 'player',

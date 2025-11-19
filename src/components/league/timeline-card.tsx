@@ -8,7 +8,7 @@ const iconMap: Record<string, React.ReactNode> = {
   match_result: <Trophy className="h-4 w-4 text-amber-500" />,
   announcement: <Megaphone className="h-4 w-4 text-sky-600" />,
   season_event: <CalendarDays className="h-4 w-4 text-emerald-600" />,
-  system: <CalendarDays className="h-4 w-4 text-slate-500" />,
+  system: <CalendarDays className="h-4 w-4 text-bdt-soft" />,
 };
 
 export function TimelineCard({ event }: { event: TimelineEvent }) {

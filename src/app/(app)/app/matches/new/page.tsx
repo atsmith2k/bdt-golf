@@ -14,11 +14,11 @@ export default async function NewMatchPage() {
         <CardHeader>
           <CardTitle>Log a match result</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 text-sm text-slate-600">
+        <CardContent className="space-y-4 text-sm text-bdt-muted">
           <p>No active season is configured yet, so match entry is disabled.</p>
           <p>
             Create a season from the{" "}
-            <Link href="/app/commissioner" className="font-semibold text-slate-900">
+            <Link href="/app/commissioner" className="font-semibold text-bdt-navy">
               commissioner console
             </Link>{" "}
             to enable match logging.
@@ -34,8 +34,8 @@ export default async function NewMatchPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Log a match result</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-bdt-navy">Log a match result</h1>
+          <p className="text-sm text-bdt-soft">
             Capture the essentials so standings and timelines stay accurate.
           </p>
         </div>

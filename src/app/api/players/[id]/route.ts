@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getLeagueConfig } from "@/lib/queries";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function GET(
   request: NextRequest,
@@ -47,6 +48,22 @@ export async function GET(
     })
     .sort((a, b) => new Date(b.playedOn).getTime() - new Date(a.playedOn).getTime());
 
+  // Load recent timeline entries authored by this player (e.g., trash-talk posts)
+  const supabase = createServerSupabaseClient();
+  const { data: trashRows } = await supabase
+    .from("timeline_events")
+    .select("id, event_type, payload, created_at")
+    .eq("created_by", player.id)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  const trashTalks = (trashRows ?? []).map((row: any) => ({
+    id: row.id,
+    eventType: row.event_type,
+    payload: row.payload ?? {},
+    createdAt: row.created_at,
+  }));
+
   return NextResponse.json({
     season: {
       id: season.id,
@@ -59,6 +76,7 @@ export async function GET(
       username: player.username,
       email: player.email,
       phone: player.phone,
+      ghin: (player as any).ghin ?? undefined,
       bio: player.bio,
       handicapIndex: player.handicapIndex,
       team: team
@@ -81,5 +99,8 @@ export async function GET(
         }
       : null,
     matches,
+    // recent trash-talk posts by this player (public-facing)
+    trashTalks,
   });
 }
+

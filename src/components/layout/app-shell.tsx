@@ -207,7 +207,7 @@ export function AppShell({ children, user, activeTeamRecord, activeSeasonName }:
         </div>
         {mobileOpen && (
           <div className="lg:hidden">
-            <div className="fixed inset-0 z-40 bg-slate-900/40" />
+              <div className="fixed inset-0 z-40 bg-[rgb(var(--bdt-navy) / 0.4)]" />
             <div className="fixed inset-y-0 left-0 z-50 flex w-[min(80vw,20rem)] max-w-sm flex-col overflow-y-auto rounded-r-3xl border border-bdt-veil bg-bdt-glass pb-8 shadow-[0_30px_60px_rgba(2,34,84,0.38)]">
               <div className="bg-gradient-to-br from-[rgb(var(--bdt-ice))] via-white to-white px-6 pb-4 pt-6 shadow-[0_12px_24px_rgb(var(--bdt-navy) / 0.08)]">
                 <div className="mb-6 flex items-center justify-between">

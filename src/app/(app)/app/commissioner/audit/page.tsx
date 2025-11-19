@@ -10,11 +10,12 @@ type SearchParams = {
   limit?: string;
 };
 
-export default async function AuditLogPage({ searchParams }: { searchParams: SearchParams }) {
-  const entityType = searchParams.entityType?.trim() || undefined;
-  const from = searchParams.from?.trim() || undefined;
-  const to = searchParams.to?.trim() || undefined;
-  const limitParam = Number.parseInt(searchParams.limit ?? "", 10);
+export default async function AuditLogPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const resolvedSearchParams = await searchParams;
+  const entityType = resolvedSearchParams.entityType?.trim() || undefined;
+  const from = resolvedSearchParams.from?.trim() || undefined;
+  const to = resolvedSearchParams.to?.trim() || undefined;
+  const limitParam = Number.parseInt(resolvedSearchParams.limit ?? "", 10);
   const limit = Number.isFinite(limitParam) ? limitParam : undefined;
 
   const logs = await getAuditLogs({

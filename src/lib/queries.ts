@@ -46,6 +46,7 @@ type UserRow = {
   display_name: string;
   email?: string | null;
   avatar_url?: string | null;
+  ghin?: string | null;
   bio?: string | null;
   handicap?: number | null;
   phone?: string | null;
@@ -159,6 +160,7 @@ function mapUser(row: UserRow): UserProfile {
     fullName: row.display_name || row.username,
     avatarUrl: row.avatar_url ?? undefined,
     bio: row.bio ?? undefined,
+    ghin: row.ghin ?? undefined,
     handicapIndex: row.handicap ?? undefined,
     phone: row.phone ?? undefined,
     role: row.role as UserProfile["role"],
@@ -513,6 +515,27 @@ export const getLeagueConfig = cache(async (): Promise<LeagueConfig> => {
   const matchRows = (matchesData ?? []) as MatchRow[];
   const timelineRows = (timelineData ?? []) as TimelineEventRow[];
   const announcementRows = (announcementsData ?? []) as AnnouncementRow[];
+
+  // Normalize avatar URLs: if a user avatar_url looks like a storage path, create a signed URL for server-side rendering.
+  try {
+    await Promise.all(
+      userRows.map(async (u) => {
+        if (!u.avatar_url) return;
+        const looksLikePath = !/^https?:\/\//i.test(u.avatar_url);
+        if (!looksLikePath) return;
+        try {
+          const { data: signed, error: signErr } = await supabase.storage.from("avatars").createSignedUrl(u.avatar_url, 60 * 60);
+          if (!signErr && signed?.signedUrl) {
+            u.avatar_url = signed.signedUrl;
+          }
+        } catch {
+          // ignore
+        }
+      }),
+    );
+  } catch (err) {
+    // ignore
+  }
 
   const baseTeams = teamsRows.map(createBaseTeamSummary);
   const derived = calculateLeagueStats({

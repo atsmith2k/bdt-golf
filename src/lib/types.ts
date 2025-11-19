@@ -53,6 +53,7 @@ export interface UserProfile {
   fullName: string;
   avatarUrl?: string;
   bio?: string;
+  ghin?: string;
   handicapIndex?: number;
   phone?: string;
   role: Role;

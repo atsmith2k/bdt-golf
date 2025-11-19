@@ -28,15 +28,20 @@ export async function GET(
   const stat = league.teamStats.find((item) => item.teamId === team.id);
   const roster = league.players
     .filter((player) => player.teamId === team.id)
-    .map((player) => ({
-      id: player.id,
-      fullName: player.fullName,
-      username: player.username,
-      handicapIndex: player.handicapIndex,
-      email: player.email,
-      phone: player.phone,
-    }))
-    .sort((a, b) => a.fullName.localeCompare(b.fullName));
+    .map((player) => {
+      const playerStat = league.playerStats.find((stat) => stat.userId === player.id);
+      return {
+        id: player.id,
+        fullName: player.fullName,
+        username: player.username,
+        handicapIndex: player.handicapIndex,
+        email: player.email,
+        phone: player.phone,
+        cumulativePoints: playerStat?.pointsTotal ?? 0,
+        status: "active" as const,
+      };
+    })
+    .sort((a, b) => b.cumulativePoints - a.cumulativePoints);
 
   const matches = league.matches
     .filter((match) => match.participatingTeams.some((participant) => participant.id === team.id))
